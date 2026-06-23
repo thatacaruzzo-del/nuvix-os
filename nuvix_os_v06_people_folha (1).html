@@ -1,0 +1,2295 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Nuvix OS v0.6 — Nuvix People</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root{
+  --navy:#820AD1;--navy2:#5A189A;--red:#A855F7;--red2:#C084FC;--white:#fff;
+  --bg:#F6F3FC;--card:#ffffff;--border:#e6def5;--muted:#6b6480;--text:#1a1430;
+  --green:#15803d;--orange:#f97316;--blue:#7C3AED;
+  --shadow:0 10px 30px rgba(90,24,154,.10);--shadow-sm:0 3px 10px rgba(90,24,154,.06);
+  --r:16px;--r-sm:11px
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:'Inter',-apple-system,Segoe UI,Arial,sans-serif;background:var(--bg);color:var(--text);font-feature-settings:"cv02","cv03","cv04";-webkit-font-smoothing:antialiased}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.app{display:flex;min-height:100vh}
+.sidebar{width:264px;background:linear-gradient(190deg,#820AD1 0%,#5A189A 70%,#4c1486 100%);color:#fff;padding:22px 14px;position:fixed;height:100vh;overflow:auto;z-index:40}
+.brandwrap{padding:4px 8px 18px}
+.logo{font-size:26px;font-weight:900;letter-spacing:-.02em;line-height:1;display:flex;align-items:center;gap:8px}
+.logo .dot{width:10px;height:10px;border-radius:50%;background:#fff;box-shadow:0 0 0 4px rgba(255,255,255,.22)}
+.tag{font-size:11.5px;color:#e6d4ff;margin:9px 2px 0;opacity:.85}
+.menu{margin-top:8px}
+.menu .grp{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#cbb3ee;margin:16px 10px 6px;font-weight:800}
+.menu button{width:100%;margin:2px 0;padding:11px 12px;background:transparent;color:#f0e7fb;border:1px solid transparent;text-align:left;border-radius:11px;cursor:pointer;font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:10px;transition:background .15s,border-color .15s}
+.menu button .ic{width:17px;height:17px;flex:none;opacity:.92}
+.menu button.active,.menu button:hover{background:rgba(255,255,255,.16);color:#fff;border-color:rgba(255,255,255,.22)}
+.menu button.active{background:rgba(255,255,255,.22)}
+
+.main{margin-left:264px;width:calc(100% - 264px);min-width:0}
+.topbar{min-height:70px;gap:12px;flex-wrap:wrap;background:rgba(255,255,255,.85);backdrop-filter:saturate(160%) blur(8px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:12px 22px;position:sticky;top:0;z-index:30}
+.topbar h1{font-size:19px;color:var(--navy);margin:0;font-weight:800;letter-spacing:-.01em}
+.controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.controls .seg{display:flex;gap:6px;align-items:center;background:#f2ecfb;border:1px solid var(--border);border-radius:11px;padding:4px}
+.controls .seg select,.controls .seg input{border:none;background:transparent;padding:6px 8px;font-weight:700;color:var(--navy);width:auto}
+.controls .seg input{width:74px}
+
+.btn{border:none;border-radius:10px;padding:9px 13px;font-weight:700;cursor:pointer;font-size:13px;display:inline-flex;align-items:center;gap:7px;transition:transform .08s,filter .15s,box-shadow .15s}
+.btn:active{transform:translateY(1px)}
+.btn .ic{width:15px;height:15px}
+.btn-navy{background:#820AD1;color:#fff;box-shadow:0 4px 12px rgba(130,10,209,.28)}
+.btn-navy:hover{filter:brightness(1.07)}
+.btn-red{background:linear-gradient(135deg,#820AD1,#A855F7);color:#fff;box-shadow:0 4px 12px rgba(168,85,247,.32)}
+.btn-red:hover{filter:brightness(1.06)}
+.btn-light{background:#f2ecfb;color:var(--navy);border:1px solid var(--border)}
+.btn-light:hover{background:#eadcfb}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--border)}
+.btn-ghost:hover{background:#f7f3fd;color:var(--navy)}
+.btn-sm{padding:6px 10px;font-size:12px;border-radius:9px}
+.btn-icon{padding:7px;border-radius:9px}
+
+input,select,textarea{width:100%;border:1px solid var(--border);border-radius:var(--r-sm);padding:10px 11px;background:#fff;font-size:13.5px;font-family:inherit;color:var(--text);transition:border-color .15s,box-shadow .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--red);box-shadow:0 0 0 3px rgba(168,85,247,.16)}
+label{display:block;font-size:11.5px;color:var(--navy);font-weight:700;margin:0 0 6px;letter-spacing:.01em}
+
+.content{padding:22px;min-width:0}
+.section{display:none;animation:fade .25s ease}
+.section.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:18px;box-shadow:var(--shadow-sm);min-width:0}
+.grid{display:grid;gap:15px}
+.cards{grid-template-columns:repeat(3,minmax(220px,1fr))}
+.two{grid-template-columns:1.4fr 1fr}
+.three{grid-template-columns:repeat(3,1fr)}
+.four{grid-template-columns:repeat(4,1fr)}
+.form4{grid-template-columns:repeat(4,1fr)}
+.form3{grid-template-columns:repeat(3,1fr)}
+.form2{grid-template-columns:repeat(2,1fr)}
+
+.title{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--navy);font-weight:800;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:10px}
+.title .hint{font-weight:600;text-transform:none;letter-spacing:0;color:var(--muted);font-size:11.5px}
+
+.metric{position:relative;overflow:hidden}
+.metric::after{content:"";position:absolute;right:-20px;top:-20px;width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,rgba(168,85,247,.10),transparent 70%)}
+.metric-label{font-size:11.5px;color:var(--muted);margin-bottom:7px;font-weight:600;display:flex;align-items:center;gap:6px}
+.metric-value{font-size:21px;font-weight:900;color:var(--navy);line-height:1.15;word-break:break-word;letter-spacing:-.01em}
+.metric-sub{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.25}
+.metric-sub.up{color:var(--green);font-weight:700}
+.metric-sub.down{color:#b91c1c;font-weight:700}
+
+.alert{background:#fff7ed;border:1px solid #fed7aa;border-left:4px solid var(--orange);border-radius:12px;padding:13px 15px;color:#7c2d12;margin-bottom:16px;font-size:13px;line-height:1.45}
+.alert.success{background:#f0fdf4;border-color:#bbf7d0;border-left-color:var(--green);color:#14532d}
+.alert.info{background:#f5f0ff;border-color:#e0ccff;border-left-color:var(--navy);color:#4c1d95}
+.alert b{font-weight:800}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:11px 10px;border-bottom:1px solid var(--border);text-align:left;white-space:nowrap}
+th{font-size:10.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:800;cursor:pointer;user-select:none}
+th.sortable:hover{color:var(--navy)}
+th .arr{opacity:.5;font-size:9px}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:#faf7fe}
+.table-wrap{overflow:auto;border-radius:10px}
+.table-empty{padding:34px 16px;text-align:center;color:var(--muted);font-size:13px}
+.table-empty .big{font-size:30px;margin-bottom:8px;opacity:.5}
+
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:.01em}
+.ok{background:#dcfce7;color:#166534}.warn{background:#ffedd5;color:#9a3412}.bad{background:#fee2e2;color:#991b1b}.info2{background:#ede9fe;color:#5b21b6}.neutral{background:#f1f0f5;color:#555}
+
+.actions{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:12px}
+.bar{height:8px;background:#ece8f5;border-radius:99px;overflow:hidden}
+.fill{height:100%;background:linear-gradient(90deg,#820AD1,#A855F7);border-radius:99px;transition:width .5s ease}
+
+.kanban{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}
+.col{background:#f7f4fc;border:1px solid var(--border);border-radius:14px;padding:11px;min-height:200px;transition:background .15s,border-color .15s}
+.col.dragover{background:#f0e7fb;border-color:var(--red);border-style:dashed}
+.col h3{font-size:12px;color:var(--navy);margin:0 0 4px;font-weight:800;display:flex;align-items:center;justify-content:space-between}
+.col .coltot{font-size:11px;color:var(--muted);margin-bottom:10px}
+.leadcard{background:#fff;border:1px solid var(--border);border-radius:11px;padding:11px;margin-bottom:8px;box-shadow:var(--shadow-sm);cursor:grab;transition:box-shadow .15s,transform .1s}
+.leadcard:hover{box-shadow:0 6px 16px rgba(90,24,154,.12);transform:translateY(-1px)}
+.leadcard:active{cursor:grabbing}
+.leadcard b{font-size:13px}
+.leadcard .lc-srv{font-size:11.5px;color:var(--muted);margin:3px 0}
+.leadcard .lc-val{font-size:13px;font-weight:800;color:var(--navy)}
+.leadcard .lc-x{float:right;cursor:pointer;color:var(--muted);font-size:14px;line-height:1}
+.leadcard .lc-x:hover{color:#b91c1c}
+
+/* search & filter bar */
+.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.search{position:relative;flex:1;min-width:180px}
+.search input{padding-left:34px}
+.search .ic{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--muted);pointer-events:none}
+.filterpill{display:inline-flex;align-items:center;gap:6px;padding:8px 11px;border:1px solid var(--border);border-radius:10px;background:#fff;font-size:12.5px;font-weight:600;color:var(--navy)}
+.filterpill select{border:none;padding:0;width:auto;font-weight:700;background:transparent;font-size:12.5px}
+
+/* pagination */
+.pager{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:14px;flex-wrap:wrap}
+.pager .info{font-size:12px;color:var(--muted)}
+.pager .pages{display:flex;gap:4px;align-items:center}
+.pager .pages button{min-width:32px;height:32px;border:1px solid var(--border);background:#fff;border-radius:8px;font-weight:700;font-size:12.5px;color:var(--navy);cursor:pointer;padding:0 8px}
+.pager .pages button:hover:not(:disabled){background:#f2ecfb}
+.pager .pages button.active{background:#820AD1;color:#fff;border-color:#820AD1}
+.pager .pages button:disabled{opacity:.4;cursor:default}
+
+/* modal */
+.modal-bg{position:fixed;inset:0;background:rgba(26,20,48,.5);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;z-index:60;padding:20px}
+.modal-bg.open{display:flex;animation:fade .2s}
+.modal{background:#fff;border-radius:18px;max-width:520px;width:100%;max-height:88vh;overflow:auto;box-shadow:0 30px 70px rgba(0,0,0,.3)}
+.modal-head{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+.modal-head h2{margin:0;font-size:16px;color:var(--navy)}
+.modal-head .x{cursor:pointer;color:var(--muted);font-size:20px;line-height:1;border:none;background:none}
+.modal-body{padding:20px}
+.modal-foot{padding:14px 20px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:8px}
+
+/* toast */
+.toast-wrap{position:fixed;bottom:22px;right:22px;z-index:80;display:flex;flex-direction:column;gap:10px;align-items:flex-end}
+.toast{background:#1a1430;color:#fff;padding:12px 16px;border-radius:12px;font-size:13px;font-weight:600;box-shadow:0 12px 30px rgba(0,0,0,.28);display:flex;align-items:center;gap:10px;animation:slidein .25s ease;max-width:340px}
+.toast.ok{background:#15803d}.toast.err{background:#b91c1c}.toast.info{background:#5A189A}
+@keyframes slidein{from{opacity:0;transform:translateX(30px)}to{opacity:1;transform:none}}
+
+/* db status pill */
+.dbpill{display:inline-flex;align-items:center;gap:7px;font-size:11.5px;font-weight:700;color:var(--green);background:#f0fdf4;border:1px solid #bbf7d0;padding:6px 11px;border-radius:999px}
+.dbpill .led{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 0 3px rgba(21,128,61,.18);animation:pulse 2s infinite}
+.dbpill.busy{color:var(--orange);background:#fff7ed;border-color:#fed7aa}
+.dbpill.busy .led{background:var(--orange);box-shadow:0 0 0 3px rgba(249,115,22,.18)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+hr{border:none;border-top:1px solid var(--border);margin:15px 0}
+.spinner{width:18px;height:18px;border:2.5px solid rgba(130,10,209,.2);border-top-color:#820AD1;border-radius:50%;animation:spin .7s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:90}
+.loading-screen .logo{font-size:32px;color:var(--navy)}
+
+.print-only{display:none}
+@media(max-width:1180px){
+  .cards{grid-template-columns:repeat(2,minmax(200px,1fr))}
+  .two,.three,.four,.form4,.form3,.form2,.kanban{grid-template-columns:1fr}
+  .sidebar{position:fixed;left:-280px;transition:left .25s}
+  .sidebar.open{left:0}
+  .main{margin-left:0;width:100%}
+  .menu-toggle{display:inline-flex!important}
+}
+@media(max-width:640px){.cards{grid-template-columns:1fr}.content{padding:16px}.topbar{padding:10px 14px}}
+.menu-toggle{display:none;background:#f2ecfb;border:1px solid var(--border);border-radius:10px;padding:8px;cursor:pointer;color:var(--navy)}
+.scrim{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:35}
+.scrim.show{display:block}
+
+@media print{
+  .sidebar,.topbar,.menu,.actions,.btn,.toolbar,.pager,.menu-toggle,.viewas,.userchip{display:none!important}
+  .main{margin:0;width:100%}.section{display:block!important}.content{padding:0}
+  .card{box-shadow:none;break-inside:avoid;border-color:#ccc}.print-only{display:block}
+  body{background:#fff}
+}
+
+/* ===== RBAC UI ===== */
+.viewas{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;color:#92400e;background:#fffbeb;border:1px solid #fde68a;padding:5px 9px;border-radius:999px}
+.viewas select{border:none;background:transparent;font-weight:800;color:#92400e;padding:0 2px;width:auto;font-size:12px;cursor:pointer}
+
+.userchip{position:relative;display:inline-flex;align-items:center;gap:8px;padding:4px 10px 4px 5px;border:1px solid var(--border);border-radius:999px;background:#fff;cursor:pointer;transition:background .15s}
+.userchip:hover{background:#f7f3fd}
+.userchip .ava{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#820AD1,#A855F7);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex:none}
+.userchip .uinfo{display:flex;flex-direction:column;line-height:1.15}
+.userchip .uinfo b{font-size:12.5px;color:var(--text)}
+.userchip .uinfo small{font-size:10.5px;color:var(--muted)}
+.umenu{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--border);border-radius:12px;box-shadow:0 16px 40px rgba(0,0,0,.16);padding:6px;min-width:170px;display:none;z-index:50}
+.umenu.open{display:block}
+.umenu button{width:100%;text-align:left;padding:9px 11px;border:none;background:none;border-radius:8px;font-size:13px;font-weight:600;color:var(--text);cursor:pointer}
+.umenu button:hover{background:#f7f3fd;color:var(--navy)}
+
+.viewbanner{background:linear-gradient(90deg,#fffbeb,#fff);border:1px solid #fde68a;border-left:4px solid #f59e0b;border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:#92400e;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.viewbanner b{font-weight:800}
+.viewbanner button{background:#f59e0b;color:#fff;border:none;border-radius:8px;padding:6px 11px;font-weight:700;font-size:12px;cursor:pointer}
+
+/* Login */
+.login-bg{position:fixed;inset:0;background:linear-gradient(160deg,#5A189A,#820AD1 60%,#4c1486);display:flex;align-items:center;justify-content:center;z-index:95;padding:20px}
+.login-card{background:#fff;border-radius:22px;box-shadow:0 30px 80px rgba(0,0,0,.35);width:100%;max-width:880px;display:grid;grid-template-columns:1fr 1fr;overflow:hidden;min-height:520px}
+.login-aside{background:linear-gradient(180deg,#820AD1,#5A189A);color:#fff;padding:42px 38px;display:flex;flex-direction:column;justify-content:space-between}
+.login-aside .logo{font-size:30px;margin-bottom:6px}
+.login-aside .pitch{font-size:14px;line-height:1.6;color:#ecd9ff;margin-top:14px}
+.login-aside .mods{margin-top:auto;display:flex;flex-direction:column;gap:9px}
+.login-aside .mods .m{font-size:12.5px;color:#f0e3ff;display:flex;align-items:center;gap:9px;opacity:.92}
+.login-aside .mods .m b{background:rgba(255,255,255,.18);padding:2px 8px;border-radius:6px;font-size:11px;font-weight:700}
+.login-form{padding:42px 40px;display:flex;flex-direction:column;justify-content:center}
+.login-form h2{margin:0 0 4px;color:var(--navy);font-size:22px}
+.login-form .sub{color:var(--muted);font-size:13px;margin-bottom:24px}
+.login-form label{margin-top:14px}
+.login-form .err{background:#fee2e2;color:#991b1b;border:1px solid #fecaca;border-radius:9px;padding:9px 11px;font-size:12.5px;margin-top:14px;display:none}
+.login-form .err.show{display:block}
+.quick{margin-top:22px;border-top:1px solid var(--border);padding-top:16px}
+.quick .qh{font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:800;margin-bottom:10px}
+.quick .qgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
+.quick .qbtn{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--border);border-radius:9px;background:#fff;cursor:pointer;font-size:12px;font-weight:600;color:var(--text);text-align:left;transition:background .12s,border-color .12s}
+.quick .qbtn:hover{background:#f7f3fd;border-color:var(--red)}
+.quick .qbtn .qic{font-size:15px}
+@media(max-width:760px){.login-card{grid-template-columns:1fr;max-width:440px}.login-aside{display:none}}
+
+/* Central do Colaborador */
+.central-hero{background:linear-gradient(120deg,#820AD1,#A855F7);color:#fff;border-radius:18px;padding:24px 26px;margin-bottom:18px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.central-hero .bigava{width:64px;height:64px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;flex:none}
+.central-hero h2{margin:0;font-size:22px}
+.central-hero p{margin:3px 0 0;color:#f0e3ff;font-size:13.5px}
+.central-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.ctile{background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px;box-shadow:var(--shadow-sm)}
+.ctile .ch{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ctile .ci{width:38px;height:38px;border-radius:11px;background:#f5f0ff;color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:18px}
+.ctile .ct{font-size:13px;font-weight:800;color:var(--navy)}
+.ctile .cbig{font-size:24px;font-weight:900;color:var(--navy);line-height:1.1}
+.ctile .csub{font-size:12px;color:var(--muted);margin-top:4px}
+@media(max-width:980px){.central-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.central-grid{grid-template-columns:1fr}}
+
+/* People sub-tabs */
+.subtabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0}
+.subtab{padding:9px 14px;border:none;background:none;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;border-bottom:2.5px solid transparent;margin-bottom:-1px;transition:color .15s,border-color .15s}
+.subtab:hover{color:var(--navy)}
+.subtab.active{color:var(--navy);border-bottom-color:var(--navy)}
+.subpane{display:none}
+.subpane.active{display:block}
+.pipeline{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.org{display:flex;flex-direction:column;gap:4px}
+.org .node{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);border-radius:10px;background:#fff}
+.org .node.lvl0{background:#f5f0ff;font-weight:800;color:var(--navy)}
+.org .node.lvl1{margin-left:26px}
+.org .node.lvl2{margin-left:52px}
+.org .node .tag2{margin-left:auto;font-size:11px;color:var(--muted)}
+
+@media(max-width:1180px){.pipeline{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<div class="loading-screen" id="loadingScreen">
+  <div class="logo"><span class="dot"></span> Nuvix</div>
+  <div class="spinner" style="width:26px;height:26px"></div>
+  <div class="muted" id="loadingMsg">Conectando ao banco de dados…</div>
+</div>
+
+<div class="scrim" id="scrim" onclick="toggleMenu(false)"></div>
+
+<!-- ============ LOGIN ============ -->
+<div class="login-bg" id="loginScreen" style="display:none">
+  <div class="login-card">
+    <div class="login-aside">
+      <div>
+        <div class="logo"><span class="dot"></span> Nuvix</div>
+        <div class="pitch">O ERP modular para gestão empresarial. Cada pessoa entra e vê exatamente o que precisa — do diretor ao colaborador.</div>
+      </div>
+      <div class="mods">
+        <div class="m"><b>Core</b> Dashboard, CRM e Financeiro</div>
+        <div class="m"><b>Fiscal</b> Notas, apuração e DRE</div>
+        <div class="m"><b>People</b> Folha, ponto e recrutamento</div>
+        <div class="m"><b>Projects</b> Tarefas e operação</div>
+      </div>
+    </div>
+    <div class="login-form">
+      <h2>Entrar na Nuvix</h2>
+      <div class="sub">Acesse com seu usuário e senha.</div>
+      <label>Usuário (e-mail)</label>
+      <input id="loginUser" placeholder="voce@empresa.com" autocomplete="username" onkeydown="if(event.key==='Enter')doLogin()">
+      <label>Senha</label>
+      <input id="loginPass" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="err" id="loginErr">Usuário ou senha incorretos.</div>
+      <button class="btn btn-red" style="margin-top:18px;justify-content:center;padding:12px" onclick="doLogin()">Entrar</button>
+
+      <div class="quick">
+        <div class="qh">Acesso rápido (demo) — entrar como</div>
+        <div class="qgrid" id="quickLogins"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app" id="app" style="display:none">
+<aside class="sidebar" id="sidebar">
+  <div class="brandwrap">
+    <div class="logo"><span class="dot"></span> Nuvix</div>
+    <div class="tag">Gestão inteligente para empresas</div>
+  </div>
+  <nav class="menu" id="menu">
+    <div class="grp" data-grp="dashboard empresas central">Visão geral</div>
+    <button data-sec="central" data-mod="central">Minha Central</button>
+    <button class="active" data-sec="dashboard" data-mod="dashboard">Dashboard Executivo</button>
+    <button data-sec="empresas" data-mod="empresas">Empresas / Parâmetros</button>
+    <div class="grp" data-grp="fiscal financeiro dre fluxo">Fiscal & Financeiro</div>
+    <button data-sec="fiscal" data-mod="fiscal">Notas e Fiscal</button>
+    <button data-sec="financeiro" data-mod="financeiro">Financeiro</button>
+    <button data-sec="dre" data-mod="dre">DRE</button>
+    <button data-sec="fluxo" data-mod="fluxo">Fluxo de Caixa</button>
+    <div class="grp" data-grp="people">Nuvix People</div>
+    <button data-sec="people" data-mod="people">Gestão de Pessoas</button>
+    <div class="grp" data-grp="operacional crm processos">Operação & Vendas</div>
+    <button data-sec="operacional" data-mod="operacional">Operacional</button>
+    <button data-sec="crm" data-mod="crm">CRM / Pipeline</button>
+    <button data-sec="processos" data-mod="processos">Processos / Onboarding</button>
+    <div class="grp" data-grp="relatorios">Saída</div>
+    <button data-sec="relatorios" data-mod="relatorios">Relatórios</button>
+  </nav>
+</aside>
+
+<main class="main">
+<div class="topbar">
+  <div style="display:flex;align-items:center;gap:12px">
+    <button class="menu-toggle" onclick="toggleMenu(true)" aria-label="Abrir menu">
+      <svg class="ic" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <h1 id="pageTitle">Dashboard Executivo</h1>
+  </div>
+  <div class="controls">
+    <div class="seg" id="ctxSeg">
+      <select id="empresaAtual" onchange="onContextChange()" title="Empresa"></select>
+      <select id="mesAtual" onchange="onContextChange()" title="Mês"></select>
+      <input id="anoAtual" type="number" value="2026" onchange="onContextChange()" title="Ano">
+    </div>
+    <span class="viewas" id="viewAsWrap" style="display:none">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:14px;height:14px"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+      Ver como
+      <select id="viewAs" onchange="setViewAs(this.value)"></select>
+    </span>
+    <span class="dbpill" id="dbPill"><span class="led"></span> <span id="dbPillText">Banco conectado</span></span>
+    <button class="btn btn-light btn-sm" id="backupBtn" onclick="exportJSON()" title="Backup completo">
+      <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      Backup
+    </button>
+    <button class="btn btn-light btn-sm" id="importBtn" onclick="document.getElementById('importFile').click()">Importar</button>
+    <input id="importFile" type="file" accept=".json" style="display:none" onchange="importJSON(event)">
+    <span class="userchip" id="userChip" onclick="toggleUserMenu()">
+      <span class="ava" id="userAva">A</span>
+      <span class="uinfo"><b id="userName">—</b><small id="userRole">—</small></span>
+      <div class="umenu" id="userMenu">
+        <button onclick="doLogout()">Sair da conta</button>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="content" id="content">
+
+<!-- ============ CENTRAL DO COLABORADOR ============ -->
+<section id="central" class="section">
+  <div class="central-hero">
+    <div class="bigava" id="centralAva">👤</div>
+    <div>
+      <h2 id="centralNome">Meu nome</h2>
+      <p id="centralCargo">Cargo · Empresa</p>
+    </div>
+  </div>
+  <div class="central-grid" id="centralGrid"></div>
+</section>
+
+<!-- ============ DASHBOARD ============ -->
+<section id="dashboard" class="section active">
+  <div class="alert info" id="dashAlert"><b>Dashboard Executivo.</b> Visão completa da empresa — cada registro vem do banco escalável.</div>
+  <div class="grid cards" id="cards"></div>
+  <div class="grid two" style="margin-top:15px" id="chartsRow">
+    <div class="card" id="chartMainCard"><div class="title">Faturamento × Impostos × Resultado <span class="hint">projeção 6 meses</span></div><canvas id="chartMain" height="150"></canvas></div>
+    <div class="card" id="chartTaxCard"><div class="title">Distribuição dos Tributos</div><canvas id="chartTax" height="150"></canvas></div>
+  </div>
+  <div class="grid three" style="margin-top:15px" id="esferasRow">
+    <div class="card"><div class="title">Impostos por Esfera</div><div id="esferas"></div></div>
+    <div class="card"><div class="title">SLA Operacional</div><div id="slaBox"></div></div>
+    <div class="card"><div class="title">Pipeline Comercial</div><div id="pipeBox"></div></div>
+  </div>
+</section>
+
+<!-- ============ EMPRESAS ============ -->
+<section id="empresas" class="section">
+  <div class="alert success">Cadastre quantas empresas/clientes precisar. Cada uma tem regime tributário e parâmetros próprios — o sistema é multi-empresa de verdade.</div>
+  <div class="grid two">
+    <div class="card">
+      <div class="title">Cadastrar / Editar empresa <span class="hint" id="empFormMode">nova</span></div>
+      <div class="grid form2">
+        <div><label>ID curto</label><input id="eId" placeholder="ex: caruzzo"></div>
+        <div><label>Razão social</label><input id="eNome" placeholder="Nome da empresa"></div>
+        <div><label>CNPJ</label><input id="eCnpj" placeholder="00.000.000/0001-00"></div>
+        <div><label>Município/UF</label><input id="eMun" placeholder="Cidade/UF"></div>
+        <div><label>Atividade</label><input id="eAtiv" placeholder="Descrição da atividade"></div>
+        <div><label>Tipo de atividade</label><select id="eTipoPrincipal" onchange="aplicarTipoOperacao()"><option>Prestação de Serviço</option><option>Venda de Produto</option><option>Transporte</option><option>Misto</option></select></div>
+        <div><label>Regime tributário</label><select id="eRegime" onchange="aplicarRegimeParametros()"><option>Simples Nacional</option><option>Lucro Presumido</option><option>Lucro Real</option></select></div>
+      </div>
+      <hr><div class="title">Parâmetros editáveis <span class="hint">alíquotas %</span></div>
+      <div class="grid form4">
+        <div><label>ISS %</label><input id="pIss" type="number" step="0.01" value="3"></div>
+        <div><label>ICMS %</label><input id="pIcms" type="number" step="0.01" value="12"></div>
+        <div><label>PIS %</label><input id="pPis" type="number" step="0.01" value="0.65"></div>
+        <div><label>COFINS %</label><input id="pCofins" type="number" step="0.01" value="3"></div>
+        <div><label>Base IRPJ %</label><input id="pBaseIrpj" type="number" step="0.01" value="32"></div>
+        <div><label>IRPJ %</label><input id="pIrpj" type="number" step="0.01" value="15"></div>
+        <div><label>CSLL %</label><input id="pCsll" type="number" step="0.01" value="9"></div>
+        <div><label>DAS Simples %</label><input id="pDas" type="number" step="0.01" value="6"></div>
+        <div><label>Margem Lucro Real %</label><input id="pMargem" type="number" step="0.01" value="18"></div>
+      </div>
+      <div class="actions">
+        <button class="btn btn-ghost" onclick="clearEmpresaForm()">Limpar campos</button>
+        <button class="btn btn-red" onclick="saveEmpresa()">Salvar empresa</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="title">Empresas cadastradas <span class="hint" id="empCount"></span></div>
+      <div class="toolbar">
+        <div class="search">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="empSearch" placeholder="Buscar empresa…" oninput="renderEmpTable()">
+        </div>
+      </div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>ID</th><th>Empresa</th><th>Regime</th><th></th></tr></thead>
+        <tbody id="empTable"></tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FISCAL ============ -->
+<section id="fiscal" class="section">
+  <div class="grid two">
+    <div class="card">
+      <div class="title">Lançar nota / documento</div>
+      <div class="grid form4">
+        <div><label>Número</label><input id="nNum" placeholder="auto"></div>
+        <div><label>Dia</label><input id="nDia" type="number" min="1" max="31" value="1"></div>
+        <div><label>Mês</label><select id="nMes"></select></div>
+        <div><label>Ano</label><input id="nAno" type="number" value="2026"></div>
+        <div><label>Cliente</label><input id="nCliente" placeholder="Nome do cliente"></div>
+        <div><label>Tipo</label><select id="nTipo"><option>Prestação de Serviço</option><option>Venda de Produto</option><option>Transporte</option></select></div>
+        <div><label>Valor</label><input id="nValor" type="number" step="0.01" placeholder="0,00"></div>
+        <div><label>Status</label><select id="nStatus"><option>Emitida</option><option>Pendente</option><option>Cancelada</option></select></div>
+      </div>
+      <div class="actions"><button class="btn btn-red" onclick="addNota()">Adicionar nota</button></div>
+    </div>
+    <div class="card">
+      <div class="title">Apuração automática do período</div>
+      <div id="apuracaoBox"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-top:15px">
+    <div class="title">Notas do período <span class="hint" id="notaCount"></span></div>
+    <div class="toolbar">
+      <div class="search">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="notaSearch" placeholder="Buscar por cliente ou número…" oninput="resetPage('nota');renderNotas()">
+      </div>
+      <span class="filterpill">Tipo <select id="notaFilterTipo" onchange="resetPage('nota');renderNotas()"><option value="">todos</option><option>Prestação de Serviço</option><option>Venda de Produto</option><option>Transporte</option></select></span>
+      <span class="filterpill">Status <select id="notaFilterStatus" onchange="resetPage('nota');renderNotas()"><option value="">todos</option><option>Emitida</option><option>Pendente</option><option>Cancelada</option></select></span>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th class="sortable" onclick="sortBy('nota','num')">Número <span class="arr" id="sort-nota-num"></span></th>
+        <th class="sortable" onclick="sortBy('nota','dia')">Data <span class="arr" id="sort-nota-dia"></span></th>
+        <th class="sortable" onclick="sortBy('nota','cliente')">Cliente <span class="arr" id="sort-nota-cliente"></span></th>
+        <th>Tipo</th>
+        <th class="sortable" onclick="sortBy('nota','valor')">Valor <span class="arr" id="sort-nota-valor"></span></th>
+        <th>Status</th><th></th>
+      </tr></thead>
+      <tbody id="notaTable"></tbody>
+    </table></div>
+    <div class="pager" id="notaPager"></div>
+  </div>
+</section>
+
+<!-- ============ FINANCEIRO ============ -->
+<section id="financeiro" class="section">
+  <div class="grid two">
+    <div class="card">
+      <div class="title">Lançamento financeiro</div>
+      <div class="grid form3">
+        <div><label>Descrição</label><input id="fDesc" placeholder="Descrição"></div>
+        <div><label>Tipo</label><select id="fTipo"><option>Receita</option><option>Despesa</option></select></div>
+        <div><label>Categoria</label><select id="fCat"><option>Cliente</option><option>Combustível</option><option>Pedágio</option><option>Folha</option><option>Fornecedor</option><option>Administrativo</option><option>Impostos</option><option>Outros</option></select></div>
+        <div><label>Dia</label><input id="fDia" type="number" value="1"></div>
+        <div><label>Mês</label><select id="fMes"></select></div>
+        <div><label>Ano</label><input id="fAno" type="number" value="2026"></div>
+        <div><label>Valor</label><input id="fValor" type="number" step="0.01" placeholder="0,00"></div>
+        <div><label>Status</label><select id="fStatus"><option>Pago/Recebido</option><option>Pendente</option><option>Vencido</option></select></div>
+      </div>
+      <div class="actions"><button class="btn btn-red" onclick="addFin()">Adicionar lançamento</button></div>
+    </div>
+    <div class="card"><div class="title">Resumo financeiro</div><div id="finBox"></div></div>
+  </div>
+  <div class="card" style="margin-top:15px">
+    <div class="title">Lançamentos <span class="hint" id="finCount"></span></div>
+    <div class="toolbar">
+      <div class="search">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="finSearch" placeholder="Buscar lançamento…" oninput="resetPage('fin');renderFinTable()">
+      </div>
+      <span class="filterpill">Tipo <select id="finFilterTipo" onchange="resetPage('fin');renderFinTable()"><option value="">todos</option><option>Receita</option><option>Despesa</option></select></span>
+      <span class="filterpill">Status <select id="finFilterStatus" onchange="resetPage('fin');renderFinTable()"><option value="">todos</option><option>Pago/Recebido</option><option>Pendente</option><option>Vencido</option></select></span>
+    </div>
+    <div class="table-wrap"><table>
+      <thead><tr>
+        <th class="sortable" onclick="sortBy('fin','dia')">Data <span class="arr" id="sort-fin-dia"></span></th>
+        <th class="sortable" onclick="sortBy('fin','desc')">Descrição <span class="arr" id="sort-fin-desc"></span></th>
+        <th>Tipo</th><th>Categoria</th>
+        <th class="sortable" onclick="sortBy('fin','valor')">Valor <span class="arr" id="sort-fin-valor"></span></th>
+        <th>Status</th><th></th>
+      </tr></thead>
+      <tbody id="finTable"></tbody>
+    </table></div>
+    <div class="pager" id="finPager"></div>
+  </div>
+</section>
+
+<!-- ============ DRE ============ -->
+<section id="dre" class="section">
+  <div class="card"><div class="title">DRE Gerencial Automática <span class="hint" id="dreCtx"></span></div><div id="dreBox"></div></div>
+</section>
+
+<!-- ============ FLUXO ============ -->
+<section id="fluxo" class="section">
+  <div class="grid two">
+    <div class="card"><div class="title">Fluxo de Caixa Projetado <span class="hint">saldo por mês</span></div><canvas id="chartFluxo" height="150"></canvas></div>
+    <div class="card"><div class="title">Próximos vencimentos</div><div id="vencBox"></div></div>
+  </div>
+</section>
+
+<!-- ============ NUVIX PEOPLE ============ -->
+<section id="people" class="section">
+  <div class="alert info"><b>Nuvix People.</b> Gestão de pessoas, folha, ponto, recrutamento e desenvolvimento — tudo persistido no banco escalável.</div>
+  <div class="subtabs" id="peopleTabs">
+    <button class="subtab active" data-pane="pColab">Colaboradores</button>
+    <button class="subtab" data-pane="pOrg">Organograma</button>
+    <button class="subtab" data-pane="pRecrut">Recrutamento</button>
+    <button class="subtab" data-pane="pFolha">Folha</button>
+    <button class="subtab" data-pane="pPonto">Ponto</button>
+    <button class="subtab" data-pane="pAval">Avaliação</button>
+    <button class="subtab" data-pane="pTrein">Treinamentos</button>
+  </div>
+
+  <!-- Colaboradores -->
+  <div class="subpane active" id="pColab">
+    <div class="grid two">
+      <div class="card">
+        <div class="title">Cadastrar colaborador</div>
+        <div class="grid form2">
+          <div><label>Nome</label><input id="coNome" placeholder="Nome completo"></div>
+          <div><label>Cargo</label><input id="coCargo" placeholder="ex: Analista"></div>
+          <div><label>Departamento</label><select id="coDep"><option>Administrativo</option><option>Financeiro</option><option>RH</option><option>Comercial</option><option>Operacional</option><option>Diretoria</option></select></div>
+          <div><label>Salário (R$)</label><input id="coSal" type="number" step="0.01" placeholder="0,00"></div>
+          <div><label>Admissão</label><input id="coAdm" type="date"></div>
+          <div><label>Status</label><select id="coStatus"><option>Ativo</option><option>Férias</option><option>Afastado</option><option>Desligado</option></select></div>
+        </div>
+        <div class="actions"><button class="btn btn-red" onclick="addColab()">Adicionar colaborador</button></div>
+      </div>
+      <div class="card">
+        <div class="title">Equipe <span class="hint" id="colabCount"></span></div>
+        <div class="toolbar">
+          <div class="search">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+            <input id="colabSearch" placeholder="Buscar colaborador…" oninput="renderColab()">
+          </div>
+        </div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Nome</th><th>Cargo</th><th>Depto</th><th>Status</th><th></th></tr></thead>
+          <tbody id="colabTable"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Organograma -->
+  <div class="subpane" id="pOrg">
+    <div class="card">
+      <div class="title">Organograma <span class="hint">por departamento</span></div>
+      <div class="org" id="orgBox"></div>
+    </div>
+  </div>
+
+  <!-- Recrutamento -->
+  <div class="subpane" id="pRecrut">
+    <div class="card">
+      <div class="title">Adicionar candidato</div>
+      <div class="grid form4">
+        <div><label>Nome</label><input id="caNome" placeholder="Candidato"></div>
+        <div><label>Vaga</label><input id="caVaga" placeholder="ex: Analista Fiscal"></div>
+        <div><label>Origem</label><select id="caOrigem"><option>LinkedIn</option><option>Indicação</option><option>Site</option><option>Outros</option></select></div>
+        <div><label>Etapa</label><select id="caEtapa"><option>Candidato</option><option>Triagem</option><option>Entrevista RH</option><option>Entrevista Gestor</option><option>Contratação</option></select></div>
+      </div>
+      <div class="actions"><button class="btn btn-red" onclick="addCand()">Adicionar ao pipeline</button></div>
+    </div>
+    <div class="alert info" style="margin-top:14px">Arraste os candidatos entre as etapas do funil de recrutamento.</div>
+    <div class="pipeline" id="recrutPipeline" style="margin-top:4px"></div>
+  </div>
+
+  <!-- Folha -->
+  <div class="subpane" id="pFolha">
+    <div class="alert info"><b>Gestão de folha simulada.</b> Os percentuais são editáveis para estudo e gestão. Para uso real, validar regras com contabilidade/RH.</div>
+    <div class="card" style="margin-bottom:15px">
+      <div class="title">Parâmetros da folha <span class="hint">editáveis por empresa</span></div>
+      <div class="grid form4">
+        <div><label>Benefícios por pessoa (R$)</label><input id="folhaBenef" type="number" step="0.01" value="600" onchange="renderFolha()"></div>
+        <div><label>FGTS empresa (%)</label><input id="folhaFgts" type="number" step="0.01" value="8" onchange="renderFolha()"></div>
+        <div><label>INSS patronal (%)</label><input id="folhaInssPat" type="number" step="0.01" value="20" onchange="renderFolha()"></div>
+        <div><label>INSS colaborador estimado (%)</label><input id="folhaInssCol" type="number" step="0.01" value="9" onchange="renderFolha()"></div>
+        <div><label>IRRF estimado (%)</label><input id="folhaIrrf" type="number" step="0.01" value="7.5" onchange="renderFolha()"></div>
+        <div><label>Provisão 13º mensal</label><select id="folhaProv13" onchange="renderFolha()"><option value="sim" selected>Sim</option><option value="nao">Não</option></select></div>
+        <div><label>Provisão férias mensal</label><select id="folhaProvFerias" onchange="renderFolha()"><option value="sim" selected>Sim</option><option value="nao">Não</option></select></div>
+      </div>
+    </div>
+    <div class="grid three">
+      <div class="card"><div class="title">Resumo da folha <span class="hint" id="folhaCtx"></span></div><div id="folhaResumo"></div></div>
+      <div class="card"><div class="title">Encargos e provisões</div><div id="folhaEncargos"></div></div>
+      <div class="card"><div class="title">Salário líquido estimado</div><div id="folhaLiquido"></div></div>
+    </div>
+    <div class="card" style="margin-top:15px">
+      <div class="title">Folha por colaborador</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Colaborador</th><th>Cargo</th><th>Bruto</th><th>INSS</th><th>IRRF</th><th>Líquido</th><th>FGTS</th><th>Custo empresa</th><th></th></tr></thead>
+        <tbody id="folhaTable"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- Ponto -->
+  <div class="subpane" id="pPonto">
+    <div class="grid two">
+      <div class="card">
+        <div class="title">Registrar ponto</div>
+        <div class="grid form3">
+          <div><label>Colaborador</label><select id="ptColab"></select></div>
+          <div><label>Data</label><input id="ptData" type="date"></div>
+          <div><label>Tipo</label><select id="ptTipo"><option>Entrada</option><option>Saída</option></select></div>
+          <div style="grid-column:1/-1"><label>Hora</label><input id="ptHora" type="time"></div>
+        </div>
+        <div class="actions"><button class="btn btn-red" onclick="addPonto()">Registrar</button></div>
+      </div>
+      <div class="card"><div class="title">Banco de horas <span class="hint">estimado</span></div><div id="bancoHoras"></div></div>
+    </div>
+    <div class="card" style="margin-top:15px">
+      <div class="title">Registros de ponto</div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Data</th><th>Colaborador</th><th>Tipo</th><th>Hora</th><th></th></tr></thead>
+        <tbody id="pontoTable"></tbody>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- Avaliação -->
+  <div class="subpane" id="pAval">
+    <div class="card">
+      <div class="title">Avaliação de desempenho <span class="hint">nota 0 a 10 por competência</span></div>
+      <div class="grid form2">
+        <div><label>Colaborador</label><select id="avColab"></select></div>
+        <div></div>
+        <div><label>Comunicação</label><input id="avCom" type="number" min="0" max="10" step="0.5" value="8"></div>
+        <div><label>Liderança</label><input id="avLid" type="number" min="0" max="10" step="0.5" value="7"></div>
+        <div><label>Entrega</label><input id="avEnt" type="number" min="0" max="10" step="0.5" value="9"></div>
+        <div><label>Organização</label><input id="avOrg" type="number" min="0" max="10" step="0.5" value="8"></div>
+      </div>
+      <div class="actions"><button class="btn btn-red" onclick="salvarAval()">Salvar avaliação</button></div>
+      <hr>
+      <div id="avalResultado"></div>
+    </div>
+  </div>
+
+  <!-- Treinamentos -->
+  <div class="subpane" id="pTrein">
+    <div class="grid two">
+      <div class="card">
+        <div class="title">Registrar treinamento</div>
+        <div class="grid form2">
+          <div><label>Curso</label><input id="trCurso" placeholder="ex: LGPD na prática"></div>
+          <div><label>Colaborador</label><select id="trColab"></select></div>
+          <div><label>Conclusão</label><input id="trData" type="date"></div>
+          <div><label>Validade (meses)</label><input id="trVal" type="number" value="12"></div>
+        </div>
+        <div class="actions"><button class="btn btn-red" onclick="addTreino()">Registrar</button></div>
+      </div>
+      <div class="card"><div class="title">Certificados <span class="hint" id="treinoCount"></span></div>
+        <div class="table-wrap"><table>
+          <thead><tr><th>Curso</th><th>Colaborador</th><th>Conclusão</th><th>Validade</th><th></th></tr></thead>
+          <tbody id="treinoTable"></tbody>
+        </table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ OPERACIONAL ============ -->
+<section id="operacional" class="section">
+  <div class="card">
+    <div class="title">Indicadores operacionais <span class="hint">por empresa</span></div>
+    <div class="grid form4">
+      <div><label>Embarques</label><input id="opEmb" type="number" value="180" onchange="saveOps()"></div>
+      <div><label>Entregas no prazo</label><input id="opPrazo" type="number" value="171" onchange="saveOps()"></div>
+      <div><label>Ocorrências</label><input id="opOco" type="number" value="8" onchange="saveOps()"></div>
+      <div><label>Devoluções</label><input id="opDev" type="number" value="3" onchange="saveOps()"></div>
+    </div>
+    <hr>
+    <div id="opResumo"></div>
+  </div>
+
+  <div class="grid two" style="margin-top:15px">
+    <div class="card">
+      <div class="title">Nova tarefa</div>
+      <div class="grid form2">
+        <div style="grid-column:1/-1"><label>Tarefa</label><input id="tkTitulo" placeholder="Descrição da tarefa"></div>
+        <div><label>Responsável</label><select id="tkResp"></select></div>
+        <div><label>Prazo</label><input id="tkPrazo" type="date"></div>
+        <div><label>Prioridade</label><select id="tkPrio"><option>Alta</option><option>Média</option><option>Baixa</option></select></div>
+        <div><label>Status</label><select id="tkStatus"><option>Pendente</option><option>Em andamento</option><option>Concluída</option></select></div>
+      </div>
+      <div class="actions"><button class="btn btn-red" onclick="addTarefa()">Criar tarefa</button></div>
+    </div>
+    <div class="card">
+      <div class="title">Tarefas da equipe <span class="hint">clique no status para avançar</span></div>
+      <div class="table-wrap"><table>
+        <thead><tr><th>Tarefa</th><th>Responsável</th><th>Prazo</th><th>Prioridade</th><th>Status</th><th></th></tr></thead>
+        <tbody id="tarefasTable"></tbody>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CRM ============ -->
+<section id="crm" class="section">
+  <div class="card">
+    <div class="title">Novo lead / contrato</div>
+    <div class="grid form4">
+      <div><label>Empresa</label><input id="lEmpresa" placeholder="Nome do prospect"></div>
+      <div><label>Serviço</label><input id="lServico" placeholder="Serviço oferecido"></div>
+      <div><label>Valor mensal</label><input id="lValor" type="number" step="0.01" placeholder="0,00"></div>
+      <div><label>Status</label><select id="lStatus"><option>Lead</option><option>Qualificado</option><option>Proposta</option><option>Onboarding</option><option>Contrato Ativo</option></select></div>
+    </div>
+    <div class="actions"><button class="btn btn-red" onclick="addLead()">Adicionar ao pipeline</button></div>
+  </div>
+  <div class="alert info" style="margin-top:15px">Arraste os cards entre as colunas para mudar o estágio — a alteração é gravada no banco na hora.</div>
+  <div class="kanban" id="kanban" style="margin-top:4px"></div>
+</section>
+
+<!-- ============ PROCESSOS ============ -->
+<section id="processos" class="section">
+  <div class="grid two">
+    <div class="card">
+      <div class="title">Checklist de onboarding</div>
+      <div id="processosBox"></div>
+    </div>
+    <div class="card">
+      <div class="title">Adicionar etapa</div>
+      <div class="grid form2">
+        <div style="grid-column:1/-1"><label>Nome da etapa</label><input id="procNome" placeholder="ex: Validar primeira nota"></div>
+      </div>
+      <div class="actions"><button class="btn btn-red" onclick="addProc()">Adicionar etapa</button></div>
+      <hr>
+      <div id="procProgress"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ RELATÓRIOS ============ -->
+<section id="relatorios" class="section">
+  <div class="card">
+    <div class="title">Relatório executivo</div>
+    <div id="relatorioBox"></div>
+    <div class="actions"><button class="btn btn-navy" onclick="window.print()">Imprimir / Salvar PDF</button></div>
+  </div>
+</section>
+
+<p class="muted" style="margin-top:18px;text-align:center">Nuvix OS v0.6 — núcleo escalável com Nuvix People, folha simulada, ponto, RH e permissões. Para uso real, valide regras trabalhistas/fiscais com contador/RH.</p>
+</div>
+</main>
+</div>
+
+<!-- Modal de confirmação -->
+<div class="modal-bg" id="confirmModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head"><h2 id="confirmTitle">Confirmar</h2><button class="x" onclick="closeConfirm()">&times;</button></div>
+    <div class="modal-body"><p id="confirmMsg" style="margin:0;font-size:14px;line-height:1.5"></p></div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost" onclick="closeConfirm()">Cancelar</button>
+      <button class="btn btn-red" id="confirmOk">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toastWrap"></div>
+
+<script>
+/* =====================================================================
+   NUVIX OS — CAMADA DE DADOS ESCALÁVEL (DAL)
+   ---------------------------------------------------------------------
+   Cada entidade vive em sua própria "tabela" e cada registro é gravado
+   individualmente com chave  table:id  no storage persistente.
+   Isso substitui o blob único de localStorage e escala para milhares
+   de registros, com índice por empresa, busca, filtro e paginação.
+
+   A API é 100% assíncrona (Promises) de propósito: o dia que você trocar
+   o adaptador por Supabase/Postgres, só a classe Adapter muda — todo o
+   resto do app (repos, telas) continua igual.
+   ===================================================================== */
+
+/* ---------- Adaptadores de persistência ---------- */
+// Detecta o storage persistente de Artifact; se ausente, usa memória.
+const HAS_STORAGE = (typeof window !== 'undefined' && window.storage &&
+                     typeof window.storage.get === 'function');
+
+class StorageAdapter {
+  // window.storage: get/set/delete/list. Lança erro em chave inexistente.
+  async get(key){
+    try{ const r = await window.storage.get(key, false); return r ? JSON.parse(r.value) : null; }
+    catch(e){ return null; } // chave inexistente => null
+  }
+  async set(key, val){ await window.storage.set(key, JSON.stringify(val), false); return val; }
+  async del(key){ try{ await window.storage.delete(key, false); }catch(e){} }
+  async listKeys(prefix){
+    try{ const r = await window.storage.list(prefix, false); return (r && r.keys) ? r.keys : []; }
+    catch(e){ return []; }
+  }
+}
+
+class MemoryAdapter {
+  constructor(){ this.m = new Map(); }
+  async get(key){ return this.m.has(key) ? JSON.parse(this.m.get(key)) : null; }
+  async set(key, val){ this.m.set(key, JSON.stringify(val)); return val; }
+  async del(key){ this.m.delete(key); }
+  async listKeys(prefix){ return [...this.m.keys()].filter(k => k.startsWith(prefix)); }
+}
+
+const adapter = HAS_STORAGE ? new StorageAdapter() : new MemoryAdapter();
+
+/* ---------- Repositório genérico (uma "tabela") ----------
+   Mantém um índice de IDs por tabela (table:__index__) para listar sem
+   varrer tudo, e grava cada registro como table:id. Equivale a uma
+   tabela relacional simples com PK = id. */
+class Repo {
+  constructor(table){ this.t = table; this.idxKey = `${table}:__index__`; }
+
+  async _index(){ return (await adapter.get(this.idxKey)) || []; }
+  async _saveIndex(ids){ await adapter.set(this.idxKey, ids); }
+
+  _newId(){
+    return (crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'id_' + Date.now() + '_' + Math.random().toString(36).slice(2,8);
+  }
+
+  async all(){
+    const ids = await this._index();
+    const rows = await Promise.all(ids.map(id => adapter.get(`${this.t}:${id}`)));
+    return rows.filter(Boolean);
+  }
+  async get(id){ return adapter.get(`${this.t}:${id}`); }
+
+  async insert(rec){
+    const id = rec.id || this._newId();
+    const row = { ...rec, id, _createdAt: rec._createdAt || Date.now() };
+    await adapter.set(`${this.t}:${id}`, row);
+    const ids = await this._index();
+    if(!ids.includes(id)){ ids.push(id); await this._saveIndex(ids); }
+    return row;
+  }
+  async update(id, patch){
+    const cur = await this.get(id); if(!cur) return null;
+    const row = { ...cur, ...patch, id };
+    await adapter.set(`${this.t}:${id}`, row);
+    return row;
+  }
+  // upsert por id fornecido (usado para empresas com id curto/manual)
+  async upsert(rec){
+    const id = rec.id; const row = { ...rec, id };
+    await adapter.set(`${this.t}:${id}`, row);
+    const ids = await this._index();
+    if(!ids.includes(id)){ ids.push(id); await this._saveIndex(ids); }
+    return row;
+  }
+  async remove(id){
+    await adapter.del(`${this.t}:${id}`);
+    const ids = (await this._index()).filter(x => x !== id);
+    await this._saveIndex(ids);
+  }
+  async clear(){
+    const ids = await this._index();
+    await Promise.all(ids.map(id => adapter.del(`${this.t}:${id}`)));
+    await this._saveIndex([]);
+  }
+  async count(){ return (await this._index()).length; }
+}
+
+/* ---------- "Schema": as tabelas do sistema ---------- */
+const DB = {
+  empresas:  new Repo('emp'),
+  notas:     new Repo('nota'),
+  fin:       new Repo('fin'),
+  leads:     new Repo('lead'),
+  processos: new Repo('proc'),
+  ops:       new Repo('ops'),     // 1 registro por empresa (id = empId)
+  users:     new Repo('user'),    // usuários do sistema (login + perfil)
+  colab:     new Repo('colab'),   // colaboradores (Nuvix People)
+  ponto:     new Repo('ponto'),   // registros de ponto
+  ferias:    new Repo('ferias'),  // saldos/solicitações de férias
+  tarefas:   new Repo('tarefa'),  // tarefas operacionais
+  holerites: new Repo('holerite'),// holerites por colaborador
+  treinos:   new Repo('treino'),  // treinamentos
+  meta:      new Repo('meta')     // flags do sistema (ex: seeded)
+};
+
+/* ---------- Cache em memória para render rápido ----------
+   Lemos do banco para o cache no boot e mantemos sincronizado a cada
+   escrita. As telas leem do cache (síncrono); as escritas vão ao banco
+   (assíncrono) e atualizam o cache. */
+const cache = { empresas:[], notas:[], fin:[], leads:[], processos:[], ops:{},
+                users:[], colab:[], ponto:[], ferias:[], tarefas:[], holerites:[], treinos:[] };
+
+async function refreshCache(){
+  const [empresas, notas, fin, leads, processos, opsRows,
+         users, colab, ponto, ferias, tarefas, holerites, treinos] = await Promise.all([
+    DB.empresas.all(), DB.notas.all(), DB.fin.all(),
+    DB.leads.all(), DB.processos.all(), DB.ops.all(),
+    DB.users.all(), DB.colab.all(), DB.ponto.all(),
+    DB.ferias.all(), DB.tarefas.all(), DB.holerites.all(), DB.treinos.all()
+  ]);
+  cache.empresas = empresas;
+  cache.notas = notas;
+  cache.fin = fin;
+  cache.leads = leads;
+  cache.processos = processos;
+  cache.ops = {}; opsRows.forEach(o => cache.ops[o.id] = o);
+  cache.users = users;
+  cache.colab = colab;
+  cache.ponto = ponto;
+  cache.ferias = ferias;
+  cache.tarefas = tarefas;
+  cache.holerites = holerites;
+  cache.treinos = treinos;
+}
+</script>
+
+<script>
+/* =====================================================================
+   RBAC — PERFIS, PERMISSÕES E SESSÃO
+   ---------------------------------------------------------------------
+   Cada perfil tem uma lista de módulos (seções) que pode ver. O menu e
+   as seções são filtrados por isso. '*' = acesso a tudo.
+   ===================================================================== */
+const ROLES = {
+  admin: {
+    label: 'Administrador', icon: '👑',
+    desc: 'Dono, sócio ou diretor — acesso total',
+    modules: '*'
+  },
+  gestor: {
+    label: 'Gestor', icon: '👨‍💼',
+    desc: 'Coordenador, supervisor ou gerente — equipe, indicadores e aprovações',
+    modules: ['dashboard','crm','operacional','processos','people','relatorios']
+  },
+  financeiro: {
+    label: 'Financeiro', icon: '💰',
+    desc: 'Receitas, despesas, fluxo, DRE e contratos',
+    modules: ['dashboard','fiscal','financeiro','dre','fluxo','relatorios']
+  },
+  rh: {
+    label: 'RH', icon: '👥',
+    desc: 'Nuvix People — pessoas, folha, ponto e recrutamento',
+    modules: ['dashboard','people','processos','relatorios']
+  },
+  comercial: {
+    label: 'Comercial', icon: '🤝',
+    desc: 'CRM, pipeline, propostas, metas e comissões',
+    modules: ['dashboard','crm','relatorios']
+  },
+  operacional: {
+    label: 'Operacional', icon: '👨‍💻',
+    desc: 'Tarefas, projetos, clientes, processos e checklist',
+    modules: ['dashboard','operacional','processos']
+  },
+  colaborador: {
+    label: 'Colaborador', icon: '👤',
+    desc: 'Central do Colaborador — apenas a sua vida na empresa',
+    modules: ['central']
+  }
+};
+
+// Estado de sessão (quem está logado + visão atual quando admin testa perfis)
+const session = { user: null, viewAs: null };
+function currentRole(){ return session.viewAs || (session.user && session.user.role) || 'colaborador'; }
+function isAdmin(){ return session.user && session.user.role === 'admin'; }
+
+// Pode ver este módulo?
+function can(moduleId){
+  const role = ROLES[currentRole()];
+  if(!role) return false;
+  if(role.modules === '*') return true;
+  return role.modules.includes(moduleId);
+}
+</script>
+<script>
+/* =====================================================================
+   UTILITÁRIOS, SEED, NAVEGAÇÃO E ESTADO DE UI
+   ===================================================================== */
+const $ = id => document.getElementById(id);
+const v = id => $(id) ? $(id).value : '';
+const n = id => Number(v(id) || 0);
+const money = x => Number(x||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
+const esc = s => String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+const meses = [['01','Janeiro'],['02','Fevereiro'],['03','Março'],['04','Abril'],['05','Maio'],['06','Junho'],['07','Julho'],['08','Agosto'],['09','Setembro'],['10','Outubro'],['11','Novembro'],['12','Dezembro']];
+
+/* ---- Toasts ---- */
+function toast(msg, kind='ok'){
+  const el = document.createElement('div');
+  el.className = `toast ${kind}`;
+  const icons = {ok:'✓', err:'✕', info:'ℹ'};
+  el.innerHTML = `<span style="font-size:15px">${icons[kind]||'✓'}</span><span>${esc(msg)}</span>`;
+  $('toastWrap').appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transform='translateX(30px)'; el.style.transition='.3s'; setTimeout(()=>el.remove(),300); }, 2600);
+}
+
+/* ---- DB activity pill ---- */
+let busyCount = 0;
+function dbBusy(on){
+  busyCount += on ? 1 : -1;
+  const pill = $('dbPill'), txt = $('dbPillText');
+  if(busyCount > 0){ pill.classList.add('busy'); txt.textContent = 'Gravando…'; }
+  else { busyCount = 0; pill.classList.remove('busy'); txt.textContent = HAS_STORAGE ? 'Banco conectado' : 'Banco (memória)'; }
+}
+// wrapper para qualquer escrita: mostra atividade + trata erro
+async function write(promiseFactory, okMsg){
+  dbBusy(true);
+  try{ const r = await promiseFactory(); if(okMsg) toast(okMsg,'ok'); return r; }
+  catch(e){ console.error(e); toast('Erro ao gravar no banco','err'); throw e; }
+  finally{ dbBusy(false); }
+}
+
+/* ---- Modal de confirmação (Promise) ---- */
+function confirmDialog(msg, title='Confirmar'){
+  return new Promise(res=>{
+    $('confirmTitle').textContent = title;
+    $('confirmMsg').textContent = msg;
+    $('confirmModal').classList.add('open');
+    const ok = $('confirmOk');
+    const done = val => { $('confirmModal').classList.remove('open'); ok.onclick=null; res(val); };
+    ok.onclick = ()=>done(true);
+    $('confirmModal')._cancel = ()=>done(false);
+  });
+}
+function closeConfirm(){ if($('confirmModal')._cancel) $('confirmModal')._cancel(); else $('confirmModal').classList.remove('open'); }
+
+/* ---- Menu mobile ---- */
+function toggleMenu(open){
+  $('sidebar').classList.toggle('open', open);
+  $('scrim').classList.toggle('show', open);
+}
+
+/* ---------- SEED: dados de exemplo na primeira execução ---------- */
+async function seedIfEmpty(){
+  const seeded = await DB.meta.get('seeded');
+  if(seeded) return;
+
+  await DB.empresas.upsert({id:'caruzzo',nome:'Empresa Modelo Ltda',cnpj:'12.345.678/0001-00',mun:'Sumaré/SP',ativ:'Prestação de serviços, consultoria, tecnologia ou operação empresarial',regime:'Lucro Presumido',tipoPrincipal:'Misto',p:{iss:3,icms:12,pis:.65,cofins:3,baseIrpj:32,irpj:15,csll:9,das:6,margem:18}});
+
+  const notas = [
+    {emp:'caruzzo',num:'00101',dia:5,mes:'11',ano:2026,cliente:'DSV Logistics',tipo:'Transporte',valor:12500,status:'Emitida'},
+    {emp:'caruzzo',num:'00102',dia:8,mes:'11',ano:2026,cliente:'DHL Supply Chain',tipo:'Prestação de Serviço',valor:8700,status:'Emitida'},
+    {emp:'caruzzo',num:'00103',dia:14,mes:'11',ano:2026,cliente:'Ctrends',tipo:'Transporte',valor:5400,status:'Emitida'}
+  ];
+  const fins = [
+    {emp:'caruzzo',desc:'Combustível',tipo:'Despesa',cat:'Combustível',dia:6,mes:'11',ano:2026,valor:3200,status:'Pago/Recebido'},
+    {emp:'caruzzo',desc:'Pedágio',tipo:'Despesa',cat:'Pedágio',dia:10,mes:'11',ano:2026,valor:780,status:'Pago/Recebido'},
+    {emp:'caruzzo',desc:'Recebimento DSV',tipo:'Receita',cat:'Cliente',dia:20,mes:'11',ano:2026,valor:12500,status:'Pago/Recebido'},
+    {emp:'caruzzo',desc:'Fornecedor agregado',tipo:'Despesa',cat:'Fornecedor',dia:25,mes:'11',ano:2026,valor:4200,status:'Pendente'}
+  ];
+  const leads = [
+    {emp:'caruzzo',empresa:'Bosch',servico:'Transporte dedicado',valor:18000,status:'Proposta'},
+    {emp:'caruzzo',empresa:'Acer',servico:'Operações expressa',valor:9500,status:'Lead'},
+    {emp:'caruzzo',empresa:'Marelli',servico:'Operação customizada',valor:22000,status:'Onboarding'}
+  ];
+  const procs = [
+    {emp:'caruzzo',nome:'Contrato assinado',feito:true},
+    {emp:'caruzzo',nome:'Dados fiscais recebidos',feito:true},
+    {emp:'caruzzo',nome:'Cadastro no sistema',feito:false},
+    {emp:'caruzzo',nome:'Parametrização tributária',feito:false},
+    {emp:'caruzzo',nome:'Primeira nota validada',feito:false}
+  ];
+  for(const x of notas) await DB.notas.insert(x);
+  for(const x of fins)  await DB.fin.insert(x);
+  for(const x of leads) await DB.leads.insert(x);
+  for(const x of procs) await DB.processos.insert(x);
+  await DB.ops.upsert({id:'caruzzo', opEmb:180, opPrazo:171, opOco:8, opDev:3});
+
+  // ----- Usuários do sistema (login + perfil) -----
+  const users = [
+    {id:'admin@nuvix.com',   nome:'Ana Diretora',   pass:'123', role:'admin',       emp:'caruzzo', cargo:'Diretora Executiva'},
+    {id:'gestor@nuvix.com',  nome:'Gabriel Gestor', pass:'123', role:'gestor',      emp:'caruzzo', cargo:'Gerente de Operações'},
+    {id:'fin@nuvix.com',     nome:'Fernanda Finance',pass:'123',role:'financeiro',  emp:'caruzzo', cargo:'Analista Financeira'},
+    {id:'rh@nuvix.com',      nome:'Rafael RH',      pass:'123', role:'rh',          emp:'caruzzo', cargo:'Coordenador de RH'},
+    {id:'vendas@nuvix.com',  nome:'Carla Comercial',pass:'123', role:'comercial',   emp:'caruzzo', cargo:'Executiva de Vendas'},
+    {id:'ops@nuvix.com',     nome:'Otávio Ops',     pass:'123', role:'operacional', emp:'caruzzo', cargo:'Analista de Operações'},
+    {id:'colab@nuvix.com',   nome:'João Colaborador',pass:'123',role:'colaborador', emp:'caruzzo', cargo:'Assistente', colabId:'joao'}
+  ];
+  for(const u of users) await DB.users.upsert(u);
+
+  // ----- Colaboradores (Nuvix People) -----
+  const colabs = [
+    {id:'joao', emp:'caruzzo', nome:'João Colaborador', cargo:'Assistente', dep:'Operacional', sal:2800, adm:'2024-03-01', status:'Ativo', recrut:false},
+    {emp:'caruzzo', nome:'Maria Souza', cargo:'Analista Fiscal', dep:'Financeiro', sal:4200, adm:'2023-08-15', status:'Ativo', recrut:false},
+    {emp:'caruzzo', nome:'Pedro Lima', cargo:'Motorista', dep:'Operacional', sal:3100, adm:'2024-01-10', status:'Férias', recrut:false},
+    {emp:'caruzzo', nome:'Bianca Alves', cargo:'Coordenadora Comercial', dep:'Comercial', sal:6500, adm:'2022-05-20', status:'Ativo', recrut:false}
+  ];
+  for(const c of colabs) await DB.colab.insert(c);
+
+  // candidatos em recrutamento (mesma tabela colab, flag recrut)
+  const cands = [
+    {emp:'caruzzo', nome:'Lucas Ferreira', cargo:'Analista Fiscal Jr', dep:'Financeiro', sal:0, recrut:true, etapa:'Triagem', origem:'LinkedIn'},
+    {emp:'caruzzo', nome:'Juliana Reis', cargo:'Assistente RH', dep:'RH', sal:0, recrut:true, etapa:'Entrevista RH', origem:'Indicação'},
+    {emp:'caruzzo', nome:'Marcos Dias', cargo:'Vendedor', dep:'Comercial', sal:0, recrut:true, etapa:'Candidato', origem:'Site'}
+  ];
+  for(const c of cands) await DB.colab.insert(c);
+
+  // tarefas (operacional + central do colaborador)
+  const tarefas = [
+    {emp:'caruzzo', titulo:'Conferir notas de novembro', resp:'joao', prazo:'2026-11-28', status:'Pendente', prio:'Alta'},
+    {emp:'caruzzo', titulo:'Atualizar cadastro de clientes', resp:'joao', prazo:'2026-11-30', status:'Em andamento', prio:'Média'},
+    {emp:'caruzzo', titulo:'Relatório de embarques', resp:'joao', prazo:'2026-12-02', status:'Pendente', prio:'Baixa'},
+    {emp:'caruzzo', titulo:'Revisar contrato Bosch', resp:'bianca', prazo:'2026-11-29', status:'Concluída', prio:'Alta'}
+  ];
+  for(const t of tarefas) await DB.tarefas.insert(t);
+
+  // holerites do João
+  const hols = [
+    {emp:'caruzzo', colabId:'joao', mes:'09', ano:2026, bruto:2800, liquido:2380},
+    {emp:'caruzzo', colabId:'joao', mes:'10', ano:2026, bruto:2800, liquido:2380},
+    {emp:'caruzzo', colabId:'joao', mes:'11', ano:2026, bruto:2800, liquido:2380}
+  ];
+  for(const h of hols) await DB.holerites.insert(h);
+
+  // férias
+  await DB.ferias.insert({emp:'caruzzo', colabId:'joao', saldo:18, proximo:'2026-12-20', status:'Disponível'});
+
+  // treinamentos
+  const treinos = [
+    {emp:'caruzzo', curso:'Integração Nuvix', colabId:'joao', data:'2024-03-05', validade:24},
+    {emp:'caruzzo', curso:'Segurança no Trabalho', colabId:'joao', data:'2025-06-10', validade:12}
+  ];
+  for(const t of treinos) await DB.treinos.insert(t);
+
+  await DB.meta.upsert({id:'seeded', value:true});
+}
+
+/* ---------- Estado de UI: busca / ordenação / paginação ---------- */
+const PAGE_SIZE = 8;
+const ui = {
+  nota: { page:1, sortKey:'dia', sortDir:'desc' },
+  fin:  { page:1, sortKey:'dia', sortDir:'desc' }
+};
+function resetPage(which){ ui[which].page = 1; }
+function sortBy(which, key){
+  const s = ui[which];
+  if(s.sortKey === key){ s.sortDir = s.sortDir==='asc' ? 'desc' : 'asc'; }
+  else { s.sortKey = key; s.sortDir = 'asc'; }
+  s.page = 1;
+  // limpa setas
+  document.querySelectorAll(`[id^="sort-${which}-"]`).forEach(e=>e.textContent='');
+  const arr = $(`sort-${which}-${key}`); if(arr) arr.textContent = s.sortDir==='asc' ? '▲' : '▼';
+  which==='nota' ? renderNotas() : renderFinTable();
+}
+function applySort(rows, s){
+  const k = s.sortKey, dir = s.sortDir==='asc'?1:-1;
+  return [...rows].sort((a,b)=>{
+    let x=a[k], y=b[k];
+    if(k==='valor'||k==='dia'){ x=Number(x)||0; y=Number(y)||0; }
+    else { x=String(x||'').toLowerCase(); y=String(y||'').toLowerCase(); }
+    return x<y?-1*dir : x>y?1*dir : 0;
+  });
+}
+function renderPager(which, total, mountId){
+  const s = ui[which], pages = Math.max(1, Math.ceil(total/PAGE_SIZE));
+  if(s.page > pages) s.page = pages;
+  const from = total===0?0:(s.page-1)*PAGE_SIZE+1, to = Math.min(s.page*PAGE_SIZE, total);
+  let btns = '';
+  const mk=(p,lbl,act,dis)=>`<button ${dis?'disabled':''} class="${act?'active':''}" onclick="goPage('${which}',${p})">${lbl}</button>`;
+  btns += mk(s.page-1,'‹',false,s.page===1);
+  for(let p=1;p<=pages;p++){
+    if(pages>7 && (p>2 && p<pages-1) && Math.abs(p-s.page)>1){
+      if(p===3 || p===pages-2) btns+=`<span class="muted" style="padding:0 4px">…</span>`;
+      continue;
+    }
+    btns += mk(p,p,p===s.page,false);
+  }
+  btns += mk(s.page+1,'›',false,s.page===pages);
+  $(mountId).innerHTML = total===0 ? '' :
+    `<div class="info">Mostrando ${from}–${to} de ${total}</div><div class="pages">${btns}</div>`;
+}
+function goPage(which, p){ ui[which].page = p; which==='nota'?renderNotas():renderFinTable(); }
+</script>
+
+<script>
+/* =====================================================================
+   LÓGICA DE NEGÓCIO + HANDLERS (CRUD ligado ao banco)
+   ===================================================================== */
+let chartMain, chartTax, chartFluxo;
+
+function curEmpId(){ return v('empresaAtual') || (cache.empresas[0] && cache.empresas[0].id) || ''; }
+function emp(){ return cache.empresas.find(e => e.id === curEmpId()); }
+function inPeriod(x){ return x.emp===curEmpId() && x.mes===v('mesAtual') && Number(x.ano)===n('anoAtual'); }
+
+/* ---- Cálculo fiscal (regras idênticas à versão original) ---- */
+function calc(){
+  const e = emp(); if(!e) return null;
+  const p = e.p;
+  const notas = cache.notas.filter(x => inPeriod(x) && x.status!=='Cancelada');
+  let fat=0, serv=0, trans=0, prod=0;
+  notas.forEach(x=>{ const val=Number(x.valor||0); fat+=val;
+    if(x.tipo==='Prestação de Serviço') serv+=val;
+    if(x.tipo==='Transporte') trans+=val;
+    if(x.tipo==='Venda de Produto') prod+=val;
+  });
+  const imp = {iss:0,icms:0,pis:0,cofins:0,irpj:0,csll:0,das:0,outros:0};
+  if(e.regime==='Simples Nacional'){
+    imp.das = fat*p.das/100;
+  } else {
+    imp.iss = serv*p.iss/100;
+    imp.icms = (trans+prod)*p.icms/100;
+    imp.pis = fat*p.pis/100;
+    imp.cofins = fat*p.cofins/100;
+    if(e.regime==='Lucro Presumido'){ const base=fat*p.baseIrpj/100; imp.irpj=base*p.irpj/100; imp.csll=base*p.csll/100; }
+    else { const lucro=fat*p.margem/100; imp.irpj=lucro*p.irpj/100; imp.csll=lucro*p.csll/100; }
+  }
+  const fin = cache.fin.filter(inPeriod);
+  const receitas = fin.filter(x=>x.tipo==='Receita').reduce((a,x)=>a+Number(x.valor),0);
+  const despesas = fin.filter(x=>x.tipo==='Despesa').reduce((a,x)=>a+Number(x.valor),0);
+  const totalImp = Object.values(imp).reduce((a,b)=>a+b,0);
+  const receb = fat+receitas;
+  const resultado = receb-despesas-totalImp;
+  return {e,p,notas,fat,serv,trans,prod,imp,totalImp,fin,receitas,despesas,receb,resultado};
+}
+
+/* ---- Selects e contexto ---- */
+function fillSelects(){
+  ['mesAtual','nMes','fMes'].forEach(id => {
+    if($(id)) $(id).innerHTML = meses.map(m=>`<option value="${m[0]}" ${m[0]==='11'?'selected':''}>${m[1]}</option>`).join('');
+  });
+}
+function renderEmpresaSelect(){
+  const sel = $('empresaAtual'), prev = sel.value;
+  sel.innerHTML = cache.empresas.map(e=>`<option value="${e.id}">${esc(e.nome)}</option>`).join('');
+  if(prev && cache.empresas.some(e=>e.id===prev)) sel.value = prev;
+}
+function onContextChange(){ loadOpsForm(); renderAll(); }
+
+/* ---- Empresas (form ↔ banco) ---- */
+function aplicarRegimeParametros(){
+  const r = v('eRegime');
+  if(r==='Simples Nacional'){ $('pDas').value=6;$('pPis').value=0;$('pCofins').value=0;$('pBaseIrpj').value=0;$('pIrpj').value=0;$('pCsll').value=0; }
+  if(r==='Lucro Presumido'){ $('pPis').value=0.65;$('pCofins').value=3;$('pBaseIrpj').value=32;$('pIrpj').value=15;$('pCsll').value=9;$('pDas').value=0;$('pMargem').value=18; }
+  if(r==='Lucro Real'){ $('pPis').value=1.65;$('pCofins').value=7.6;$('pBaseIrpj').value=100;$('pIrpj').value=15;$('pCsll').value=9;$('pDas').value=0;$('pMargem').value=18; }
+}
+function aplicarTipoOperacao(){
+  const t = v('eTipoPrincipal');
+  if(t==='Prestação de Serviço'){ $('pIss').value=3;$('pIcms').value=0; }
+  if(t==='Venda de Produto'){ $('pIss').value=0;$('pIcms').value=12; }
+  if(t==='Transporte'){ $('pIss').value=0;$('pIcms').value=12; }
+  if(t==='Misto'){ $('pIss').value=3;$('pIcms').value=12; }
+}
+function clearEmpresaForm(){
+  ['eId','eNome','eCnpj','eMun','eAtiv'].forEach(id=>$(id).value='');
+  $('eTipoPrincipal').value='Prestação de Serviço'; $('eRegime').value='Simples Nacional';
+  aplicarRegimeParametros(); aplicarTipoOperacao();
+  $('empFormMode').textContent='nova';
+}
+function loadEmpresaForm(id){
+  const e = cache.empresas.find(x=>x.id===id); if(!e) return;
+  $('eId').value=e.id; $('eNome').value=e.nome; $('eCnpj').value=e.cnpj||''; $('eMun').value=e.mun||'';
+  $('eAtiv').value=e.ativ||''; $('eRegime').value=e.regime; $('eTipoPrincipal').value=e.tipoPrincipal||'Prestação de Serviço';
+  const p=e.p; $('pIss').value=p.iss;$('pIcms').value=p.icms;$('pPis').value=p.pis;$('pCofins').value=p.cofins;
+  $('pBaseIrpj').value=p.baseIrpj;$('pIrpj').value=p.irpj;$('pCsll').value=p.csll;$('pDas').value=p.das;$('pMargem').value=p.margem;
+  $('empFormMode').textContent='editando: '+e.id;
+  $('empresas').scrollIntoView({behavior:'smooth',block:'start'});
+}
+async function saveEmpresa(){
+  const id = (v('eId').trim()) || ('emp'+Date.now());
+  const rec = {
+    id, nome:v('eNome')||id, cnpj:v('eCnpj'), mun:v('eMun'), ativ:v('eAtiv'),
+    tipoPrincipal:v('eTipoPrincipal')||'Prestação de Serviço', regime:v('eRegime'),
+    p:{iss:n('pIss'),icms:n('pIcms'),pis:n('pPis'),cofins:n('pCofins'),baseIrpj:n('pBaseIrpj'),irpj:n('pIrpj'),csll:n('pCsll'),das:n('pDas'),margem:n('pMargem')}
+  };
+  await write(()=>DB.empresas.upsert(rec), 'Empresa salva');
+  await refreshCache();
+  renderEmpresaSelect(); $('empresaAtual').value = id;
+  renderAll();
+}
+async function removeEmpresa(id){
+  if(cache.empresas.length<=1){ toast('Mantenha ao menos uma empresa','err'); return; }
+  const ok = await confirmDialog('Excluir esta empresa? As notas, lançamentos e leads dela continuarão no banco, mas ficarão sem empresa ativa.', 'Excluir empresa');
+  if(!ok) return;
+  await write(()=>DB.empresas.remove(id), 'Empresa excluída');
+  await refreshCache(); renderEmpresaSelect(); renderAll();
+}
+
+/* ---- Notas ---- */
+async function addNota(){
+  if(!emp()){ toast('Cadastre uma empresa primeiro','err'); return; }
+  const rec = {emp:curEmpId(), num:v('nNum')||('NF'+Date.now()), dia:n('nDia'), mes:v('nMes'), ano:n('nAno'),
+               cliente:v('nCliente')||'Cliente', tipo:v('nTipo'), valor:n('nValor'), status:v('nStatus')};
+  await write(()=>DB.notas.insert(rec), 'Nota adicionada');
+  ['nNum','nCliente','nValor'].forEach(id=>$(id).value='');
+  await refreshCache(); renderAll();
+}
+async function removeNota(id){
+  const ok = await confirmDialog('Excluir esta nota?','Excluir nota'); if(!ok) return;
+  await write(()=>DB.notas.remove(id), 'Nota excluída');
+  await refreshCache(); renderAll();
+}
+
+/* ---- Financeiro ---- */
+async function addFin(){
+  if(!emp()){ toast('Cadastre uma empresa primeiro','err'); return; }
+  const rec = {emp:curEmpId(), desc:v('fDesc')||'Lançamento', tipo:v('fTipo'), cat:v('fCat'),
+               dia:n('fDia'), mes:v('fMes'), ano:n('fAno'), valor:n('fValor'), status:v('fStatus')};
+  await write(()=>DB.fin.insert(rec), 'Lançamento adicionado');
+  ['fDesc','fValor'].forEach(id=>$(id).value='');
+  await refreshCache(); renderAll();
+}
+async function removeFin(id){
+  const ok = await confirmDialog('Excluir este lançamento?','Excluir lançamento'); if(!ok) return;
+  await write(()=>DB.fin.remove(id), 'Lançamento excluído');
+  await refreshCache(); renderAll();
+}
+
+/* ---- Leads / CRM ---- */
+async function addLead(){
+  if(!emp()){ toast('Cadastre uma empresa primeiro','err'); return; }
+  const rec = {emp:curEmpId(), empresa:v('lEmpresa')||'Lead', servico:v('lServico')||'Serviço', valor:n('lValor'), status:v('lStatus')};
+  await write(()=>DB.leads.insert(rec), 'Lead adicionado');
+  ['lEmpresa','lServico','lValor'].forEach(id=>$(id).value='');
+  await refreshCache(); renderKanban();
+}
+async function moveLead(id, status){
+  await write(()=>DB.leads.update(id, {status}), null);
+  await refreshCache(); renderKanban(); renderCards(calc());
+}
+async function removeLead(id){
+  await write(()=>DB.leads.remove(id), 'Lead removido');
+  await refreshCache(); renderKanban(); renderCards(calc());
+}
+
+/* ---- Processos ---- */
+async function addProc(){
+  if(!emp()){ toast('Cadastre uma empresa primeiro','err'); return; }
+  const nome = v('procNome').trim(); if(!nome){ toast('Informe o nome da etapa','err'); return; }
+  await write(()=>DB.processos.insert({emp:curEmpId(), nome, feito:false}), 'Etapa adicionada');
+  $('procNome').value='';
+  await refreshCache(); renderProc();
+}
+async function toggleProc(id, feito){
+  await write(()=>DB.processos.update(id, {feito}), null);
+  await refreshCache(); renderProc();
+}
+async function removeProc(id){
+  await write(()=>DB.processos.remove(id), 'Etapa removida');
+  await refreshCache(); renderProc();
+}
+
+/* ---- Operacional ---- */
+function loadOpsForm(){
+  const o = cache.ops[curEmpId()] || {opEmb:180,opPrazo:171,opOco:8,opDev:3};
+  $('opEmb').value=o.opEmb; $('opPrazo').value=o.opPrazo; $('opOco').value=o.opOco; $('opDev').value=o.opDev;
+}
+async function saveOps(){
+  if(!emp()) return;
+  const rec = {id:curEmpId(), opEmb:n('opEmb'), opPrazo:n('opPrazo'), opOco:n('opOco'), opDev:n('opDev')};
+  await write(()=>DB.ops.upsert(rec), null);
+  await refreshCache(); renderOps(); renderCards(calc());
+}
+
+/* ---- Backup / Restore ---- */
+async function exportJSON(){
+  const dump = {
+    _meta:{app:'Nuvix OS', exportedAt:new Date().toISOString(), version:'1.0-scalable'},
+    empresas: cache.empresas, notas: cache.notas, fin: cache.fin,
+    leads: cache.leads, processos: cache.processos, ops: Object.values(cache.ops)
+  };
+  const blob = new Blob([JSON.stringify(dump,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'nuvix_os_backup.json'; a.click();
+  toast('Backup exportado','ok');
+}
+async function importJSON(ev){
+  const file = ev.target.files[0]; if(!file) return;
+  const ok = await confirmDialog('Importar este backup substituirá TODOS os dados atuais. Continuar?','Importar backup');
+  if(!ok){ ev.target.value=''; return; }
+  const reader = new FileReader();
+  reader.onload = async e => {
+    try{
+      const data = JSON.parse(e.target.result);
+      dbBusy(true);
+      // limpa tabelas
+      await Promise.all([DB.empresas.clear(),DB.notas.clear(),DB.fin.clear(),DB.leads.clear(),DB.processos.clear(),DB.ops.clear()]);
+      // regrava
+      for(const x of (data.empresas||[])) await DB.empresas.upsert(x);
+      for(const x of (data.notas||[]))    await DB.notas.insert(x);
+      for(const x of (data.fin||[]))      await DB.fin.insert(x);
+      for(const x of (data.leads||[]))    await DB.leads.insert(x);
+      for(const x of (data.processos||[]))await DB.processos.insert(x);
+      for(const x of (data.ops||[]))      await DB.ops.upsert(x);
+      await DB.meta.upsert({id:'seeded', value:true});
+      await refreshCache();
+      fillSelects(); renderEmpresaSelect(); loadOpsForm(); renderAll();
+      toast('Backup importado com sucesso','ok');
+    }catch(err){ console.error(err); toast('Arquivo inválido','err'); }
+    finally{ dbBusy(false); ev.target.value=''; }
+  };
+  reader.readAsText(file);
+}
+</script>
+
+<script>
+/* =====================================================================
+   RENDER (telas leem do cache; UI reativa)
+   ===================================================================== */
+function renderAll(){
+  const c = calc();
+  // Central do colaborador
+  if(can('central')) renderCentral();
+  // Dashboard adaptado por perfil
+  if(can('dashboard')) renderDashboardForRole(c);
+  // Empresas
+  if(can('empresas')) renderEmpTable();
+  // Fiscal/Financeiro
+  if(c){
+    if(can('fiscal')){ renderApuracao(c); renderNotas(); }
+    if(can('financeiro')){ renderFin(c); renderFinTable(); }
+    if(can('dre')) renderDRE(c);
+    if(can('fluxo')) renderFluxo(c);
+    if(can('relatorios')) renderReport(c);
+  }
+  // Operação/Vendas
+  if(can('operacional')){ renderOps(); renderTarefas(); }
+  if(can('crm')) renderKanban();
+  if(can('processos')) renderProc();
+  // Nuvix People
+  if(can('people')) renderPeople();
+}
+
+/* ---- Dashboard adaptado por perfil ---- */
+function renderDashboardForRole(c){
+  const role = currentRole();
+  const alertEl = $('dashAlert');
+  const colabs = cache.colab.filter(x=>x.emp===curEmpId() && !x.recrut);
+
+  // RH e Comercial têm dashboards próprios; demais usam o executivo padrão
+  if(role==='rh'){
+    if(alertEl) alertEl.innerHTML = '<b>Dashboard de RH.</b> Indicadores de pessoas da sua empresa.';
+    const ativos=colabs.filter(x=>x.status==='Ativo').length;
+    const ferias=colabs.filter(x=>x.status==='Férias').length;
+    const desligados=cache.colab.filter(x=>x.emp===curEmpId()&&x.status==='Desligado').length;
+    const turnover = colabs.length ? Math.round(desligados/(colabs.length+desligados)*100) : 0;
+    const folha = colabs.reduce((a,x)=>a+Number(x.sal||0),0);
+    dashCards([
+      ['Colaboradores', String(colabs.length), 'ativos na empresa', ''],
+      ['Em férias', String(ferias), 'neste período', ''],
+      ['Turnover', turnover+'%', 'rotatividade estimada', turnover>15?'down':'up'],
+      ['Folha mensal', money(folha), 'salários base', ''],
+      ['Recrutamento', String(cache.colab.filter(x=>x.emp===curEmpId()&&x.recrut).length), 'candidatos no funil', ''],
+      ['Banco de horas', '—', 'ver Nuvix People', '']
+    ]);
+    hideCharts(); hideEsferas();
+    return;
+  }
+  if(role==='comercial'){
+    if(alertEl) alertEl.innerHTML = '<b>Dashboard Comercial.</b> Seu pipeline e suas metas.';
+    const leads=cache.leads.filter(l=>l.emp===curEmpId());
+    const total=leads.reduce((a,l)=>a+Number(l.valor||0),0);
+    const ativos=leads.filter(l=>l.status==='Contrato Ativo');
+    const valAtivos=ativos.reduce((a,l)=>a+Number(l.valor||0),0);
+    const conv = leads.length ? Math.round(ativos.length/leads.length*100) : 0;
+    const meta = 50000, ating = Math.min(100, Math.round(valAtivos/meta*100));
+    dashCards([
+      ['Pipeline total', money(total), `${leads.length} oportunidades`, ''],
+      ['Contratos ativos', String(ativos.length), money(valAtivos)+'/mês', ''],
+      ['Conversão', conv+'%', 'lead → contrato', conv>=30?'up':''],
+      ['Meta do mês', money(meta), ating+'% atingido', ating>=100?'up':''],
+      ['MRR ativo', money(valAtivos), 'receita recorrente', ''],
+      ['Comissão est.', money(valAtivos*0.05), '5% sobre ativo', '']
+    ]);
+    hideCharts(); hideEsferas();
+    return;
+  }
+
+  // Admin / Gestor / Financeiro → dashboard executivo completo
+  showExecutiveBlocks();
+  if(alertEl){
+    alertEl.innerHTML = role==='financeiro'
+      ? '<b>Dashboard Financeiro.</b> Fluxo, resultado e tributos da empresa.'
+      : '<b>Dashboard Executivo.</b> Visão completa da empresa — cada registro vem do banco escalável.';
+  }
+  if(c){ renderCards(c); renderCharts(c); }
+}
+function dashCards(arr){
+  $('cards').innerHTML = arr.map(x=>`
+    <div class="card metric">
+      <div class="metric-label">${x[0]}</div>
+      <div class="metric-value">${x[1]}</div>
+      <div class="metric-sub ${x[3]||''}">${x[2]}</div>
+    </div>`).join('');
+}
+function hideCharts(){
+  ['chartMainCard','chartTaxCard'].forEach(id=>{ const e=$(id); if(e) e.style.display='none'; });
+}
+function hideEsferas(){ const e=$('esferasRow'); if(e) e.style.display='none'; }
+function showExecutiveBlocks(){
+  ['chartMainCard','chartTaxCard'].forEach(id=>{ const e=$(id); if(e) e.style.display=''; });
+  const e=$('esferasRow'); if(e) e.style.display='';
+}
+
+/* ---- Central do Colaborador ---- */
+function renderCentral(){
+  const u = session.user; if(!u) return;
+  const colab = cache.colab.find(x=>x.id===u.colabId) || {nome:u.nome, cargo:u.cargo, dep:'—'};
+  const empNome = (cache.empresas.find(e=>e.id===u.emp)||{}).nome || '';
+  $('centralAva').textContent = (u.nome||'?').charAt(0).toUpperCase();
+  $('centralNome').textContent = u.nome;
+  $('centralCargo').textContent = `${colab.cargo||u.cargo||'Colaborador'} · ${empNome}`;
+
+  const cid = u.colabId;
+  const minhasTarefas = cache.tarefas.filter(t=>t.resp===cid);
+  const pendentes = minhasTarefas.filter(t=>t.status!=='Concluída');
+  const ferias = cache.ferias.find(f=>f.colabId===cid) || {saldo:0, proximo:'—'};
+  const holerites = cache.holerites.filter(h=>h.colabId===cid).sort((a,b)=>(b.ano-a.ano)||(b.mes>a.mes?1:-1));
+  const treinos = cache.treinos.filter(t=>t.colabId===cid);
+  // banco de horas estimado a partir dos pontos
+  const pts = cache.ponto.filter(p=>p.colabId===cid);
+
+  const tiles = [
+    {ic:'👤', t:'Meu Perfil', big:esc(colab.cargo||u.cargo||'—'), sub:`${esc(colab.dep||'—')} · admissão ${colab.adm?fmtDate(colab.adm):'—'}`,
+     extra:`<p class="csub" style="margin-top:8px">${esc(u.id)}</p>`},
+    {ic:'⏰', t:'Meu Ponto', big:`${pts.length}`, sub:'registros lançados',
+     extra:`<button class="btn btn-light btn-sm" style="margin-top:10px" onclick="gotoSectionAsColab('ponto')">Registrar ponto</button>`},
+    {ic:'🌴', t:'Minhas Férias', big:`${ferias.saldo} dias`, sub:`saldo disponível · próximo: ${ferias.proximo!=='—'?fmtDate(ferias.proximo):'a definir'}`},
+    {ic:'✅', t:'Minhas Tarefas', big:`${pendentes.length}`, sub:`pendentes de ${minhasTarefas.length} no total`,
+     extra: pendentes.slice(0,3).map(t=>`<p class="csub" style="margin-top:6px">• ${esc(t.titulo)} <span class="badge ${t.prio==='Alta'?'bad':t.prio==='Média'?'warn':'neutral'}" style="font-size:10px">${t.prio}</span></p>`).join('')},
+    {ic:'📄', t:'Meus Holerites', big:`${holerites.length}`, sub:'disponíveis para download',
+     extra: holerites.slice(0,3).map(h=>`<p class="csub" style="margin-top:6px;display:flex;justify-content:space-between;align-items:center">${meses[+h.mes-1][1]}/${h.ano} <button class="btn btn-light btn-sm" onclick="baixarHolerite('${h.id}')">PDF</button></p>`).join('')},
+    {ic:'🎓', t:'Meus Treinamentos', big:`${treinos.length}`, sub:'concluídos',
+     extra: treinos.map(t=>`<p class="csub" style="margin-top:6px">• ${esc(t.curso)} <span class="muted">(${fmtDate(t.data)})</span></p>`).join('')}
+  ];
+  $('centralGrid').innerHTML = tiles.map(x=>`
+    <div class="ctile">
+      <div class="ch"><div class="ci">${x.ic}</div><div class="ct">${x.t}</div></div>
+      <div class="cbig">${x.big}</div>
+      <div class="csub">${x.sub}</div>
+      ${x.extra||''}
+    </div>`).join('');
+}
+function fmtDate(d){ if(!d) return '—'; const p=String(d).split('-'); return p.length===3?`${p[2]}/${p[1]}/${p[0]}`:d; }
+function gotoSectionAsColab(){ toast('No app real, o colaborador registra o ponto aqui. Use o perfil RH/Admin para ver a gestão completa.','info'); }
+function baixarHolerite(id){
+  const h = cache.holerites.find(x=>x.id===id); if(!h) return;
+  const u = session.user;
+  const txt = `NUVIX PEOPLE — HOLERITE\n\nColaborador: ${u.nome}\nCompetência: ${meses[+h.mes-1][1]}/${h.ano}\n\nSalário bruto: ${money(h.bruto)}\nSalário líquido: ${money(h.liquido)}\n\nDocumento gerado pela Nuvix para fins de demonstração.`;
+  const blob = new Blob([txt],{type:'text/plain'});
+  const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=`holerite_${h.mes}_${h.ano}.txt`; a.click();
+  toast('Holerite baixado','ok');
+}
+
+/* ---- Cards executivos ---- */
+function renderCards(c){
+  if(!c){ $('cards').innerHTML=''; return; }
+  const ativos = cache.leads.filter(l=>l.emp===curEmpId() && l.status==='Contrato Ativo');
+  const valorAtivos = ativos.reduce((a,l)=>a+Number(l.valor||0),0);
+  const arr = [
+    ['Faturamento', money(c.fat), c.notas.length+' notas no período', ''],
+    ['Impostos', money(c.totalImp), c.e.regime, ''],
+    ['Resultado', money(c.resultado), c.resultado>=0?'resultado positivo':'requer atenção', c.resultado>=0?'up':'down'],
+    ['Contratos ativos', String(ativos.length), money(valorAtivos)+'/mês', ''],
+    ['MRR ativo', money(valorAtivos), 'receita recorrente', ''],
+    ['Atividade', c.e.tipoPrincipal||'Prestação de Serviço', c.e.mun||'—', '']
+  ];
+  $('cards').innerHTML = arr.map(x=>`
+    <div class="card metric">
+      <div class="metric-label">${x[0]}</div>
+      <div class="metric-value">${x[1]}</div>
+      <div class="metric-sub ${x[3]}">${x[2]}</div>
+    </div>`).join('');
+
+  const fed=c.imp.pis+c.imp.cofins+c.imp.irpj+c.imp.csll+c.imp.das+c.imp.outros, mun=c.imp.iss, est=c.imp.icms;
+  const tot=fed+mun+est||1;
+  $('esferas').innerHTML=[['Federal',fed],['Municipal',mun],['Estadual',est]].map(x=>{
+    const pct=Math.round(x[1]/tot*100);
+    return `<p style="margin:0 0 4px;font-size:13px"><b>${x[0]}</b> · ${money(x[1])} <span class="muted">(${pct}%)</span></p>
+            <div class="bar" style="margin-bottom:13px"><div class="fill" style="width:${pct}%"></div></div>`;
+  }).join('');
+}
+
+/* ---- Charts (resilientes: se Chart.js não carregar, app segue funcionando) ---- */
+function chartFallback(canvasId){
+  const cv=$(canvasId); if(!cv) return;
+  const box=document.createElement('div');
+  box.className='muted';
+  box.style.cssText='padding:30px 14px;text-align:center;font-size:12.5px';
+  box.innerHTML='Gráfico indisponível (biblioteca de charts não carregou). Os números nas tabelas e cards continuam corretos.';
+  cv.replaceWith(box);
+}
+function renderCharts(c){
+  if(typeof Chart === 'undefined'){ chartFallback('chartMain'); chartFallback('chartTax'); return; }
+  try{
+    const labels=['Jul','Ago','Set','Out','Nov','Dez'];
+    const base=[.72,.8,.86,.92,1,1.08].map(m=>c.fat*m);
+    const imps=base.map(b=>{ const old=c.fat; return c.totalImp*(old?b/old:0); });
+    if(chartMain)chartMain.destroy();
+    chartMain=new Chart($('chartMain'),{type:'bar',data:{labels,datasets:[
+      {label:'Faturamento',data:base,backgroundColor:'#820AD1',borderRadius:5},
+      {label:'Impostos',data:imps,backgroundColor:'#A855F7',borderRadius:5},
+      {label:'Resultado',data:base.map((b,i)=>b-imps[i]-c.despesas),backgroundColor:'#C084FC',borderRadius:5}
+    ]},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:11}}}},scales:{y:{ticks:{callback:v=>'R$'+(v/1000).toFixed(0)+'k'}}}}});
+
+    const labs=['ISS','ICMS','PIS','COFINS','IRPJ','CSLL','DAS'];
+    const vals=[c.imp.iss,c.imp.icms,c.imp.pis,c.imp.cofins,c.imp.irpj,c.imp.csll,c.imp.das];
+    if(chartTax)chartTax.destroy();
+    chartTax=new Chart($('chartTax'),{type:'doughnut',data:{labels:labs.filter((_,i)=>vals[i]>0),datasets:[{data:vals.filter(x=>x>0),backgroundColor:['#5A189A','#A855F7','#64748b','#C084FC','#7C3AED','#6B21A8','#15803d'],borderWidth:2,borderColor:'#fff'}]},options:{cutout:'62%',plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:11}}}}}});
+  }catch(e){ console.warn('chart main/tax falhou:',e); }
+}
+
+/* ---- Apuração / tabelas ---- */
+function renderApuracao(c){
+  $('apuracaoBox').innerHTML =
+    `<p style="margin:0 0 4px"><b>Regime:</b> ${esc(c.e.regime)}</p>
+     <p style="margin:0 0 10px"><b>Tipo principal:</b> ${esc(c.e.tipoPrincipal||'Prestação de Serviço')}</p><hr>`+
+    ['iss','icms','pis','cofins','irpj','csll','das'].map(k=>`<p style="margin:5px 0;display:flex;justify-content:space-between"><span>${k.toUpperCase()}</span><b>${money(c.imp[k])}</b></p>`).join('')+
+    `<hr><p style="margin:0;display:flex;justify-content:space-between;font-size:15px"><b>Total de impostos</b><b style="color:var(--navy)">${money(c.totalImp)}</b></p>
+     <p class="muted" style="margin-top:8px">Cálculo automático conforme regime, tipo das notas e parâmetros editáveis.</p>`;
+}
+
+/* ---- Notas: busca + filtro + sort + paginação ---- */
+function filteredNotas(){
+  const q=v('notaSearch').toLowerCase(), ft=v('notaFilterTipo'), fs=v('notaFilterStatus');
+  let rows = cache.notas.filter(x=>x.emp===curEmpId() && x.mes===v('mesAtual') && Number(x.ano)===n('anoAtual'));
+  if(q) rows = rows.filter(x=>(x.cliente||'').toLowerCase().includes(q) || (x.num||'').toLowerCase().includes(q));
+  if(ft) rows = rows.filter(x=>x.tipo===ft);
+  if(fs) rows = rows.filter(x=>x.status===fs);
+  return applySort(rows, ui.nota);
+}
+function renderNotas(){
+  const all = filteredNotas();
+  $('notaCount').textContent = all.length ? `${all.length} no período` : '';
+  const s = ui.nota, start=(s.page-1)*PAGE_SIZE, rows=all.slice(start,start+PAGE_SIZE);
+  const badge = st => st==='Emitida'?'ok':st==='Pendente'?'warn':'bad';
+  $('notaTable').innerHTML = rows.length ? rows.map(x=>`
+    <tr>
+      <td>${esc(x.num)}</td>
+      <td>${String(x.dia).padStart(2,'0')}/${x.mes}/${x.ano}</td>
+      <td>${esc(x.cliente)}</td>
+      <td>${esc(x.tipo)}</td>
+      <td><b>${money(x.valor)}</b></td>
+      <td><span class="badge ${badge(x.status)}">${esc(x.status)}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="removeNota('${x.id}')">Excluir</button></td>
+    </tr>`).join('')
+    : `<tr><td colspan="7"><div class="table-empty"><div class="big">∅</div>Nenhuma nota encontrada neste período. Ajuste os filtros ou lance uma nova nota.</div></td></tr>`;
+  renderPager('nota', all.length, 'notaPager');
+}
+
+/* ---- Financeiro: resumo + tabela ---- */
+function renderFin(c){
+  $('finBox').innerHTML=`
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>Receitas extras</span><b>${money(c.receitas)}</b></p>
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>Despesas</span><b>${money(c.despesas)}</b></p>
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>Impostos</span><b>${money(c.totalImp)}</b></p>
+    <hr><p style="margin:0;display:flex;justify-content:space-between;font-size:15px"><b>Resultado</b><b style="color:${c.resultado>=0?'var(--green)':'#b91c1c'}">${money(c.resultado)}</b></p>`;
+}
+function filteredFin(){
+  const q=v('finSearch').toLowerCase(), ft=v('finFilterTipo'), fs=v('finFilterStatus');
+  let rows = cache.fin.filter(x=>x.emp===curEmpId() && x.mes===v('mesAtual') && Number(x.ano)===n('anoAtual'));
+  if(q) rows = rows.filter(x=>(x.desc||'').toLowerCase().includes(q) || (x.cat||'').toLowerCase().includes(q));
+  if(ft) rows = rows.filter(x=>x.tipo===ft);
+  if(fs) rows = rows.filter(x=>x.status===fs);
+  return applySort(rows, ui.fin);
+}
+function renderFinTable(){
+  const all = filteredFin();
+  $('finCount').textContent = all.length ? `${all.length} no período` : '';
+  const s=ui.fin, start=(s.page-1)*PAGE_SIZE, rows=all.slice(start,start+PAGE_SIZE);
+  const badge = st => st==='Pago/Recebido'?'ok':st==='Pendente'?'warn':'bad';
+  $('finTable').innerHTML = rows.length ? rows.map(x=>`
+    <tr>
+      <td>${String(x.dia).padStart(2,'0')}/${x.mes}/${x.ano}</td>
+      <td>${esc(x.desc)}</td>
+      <td><span class="badge ${x.tipo==='Receita'?'ok':'neutral'}">${esc(x.tipo)}</span></td>
+      <td>${esc(x.cat)}</td>
+      <td><b>${money(x.valor)}</b></td>
+      <td><span class="badge ${badge(x.status)}">${esc(x.status)}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="removeFin('${x.id}')">Excluir</button></td>
+    </tr>`).join('')
+    : `<tr><td colspan="7"><div class="table-empty"><div class="big">∅</div>Nenhum lançamento encontrado. Ajuste os filtros ou adicione um novo.</div></td></tr>`;
+  renderPager('fin', all.length, 'finPager');
+}
+
+/* ---- Empresas ---- */
+function renderEmpTable(){
+  const q=v('empSearch').toLowerCase();
+  let rows = cache.empresas;
+  if(q) rows = rows.filter(e=>e.nome.toLowerCase().includes(q) || e.id.toLowerCase().includes(q));
+  $('empCount').textContent = `${cache.empresas.length} cadastrada${cache.empresas.length!==1?'s':''}`;
+  $('empTable').innerHTML = rows.length ? rows.map(e=>`
+    <tr>
+      <td><code style="font-size:12px">${esc(e.id)}</code></td>
+      <td>${esc(e.nome)}</td>
+      <td><span class="badge info2">${esc(e.regime)}</span></td>
+      <td style="text-align:right;white-space:nowrap">
+        <button class="btn btn-light btn-sm" onclick="$('empresaAtual').value='${e.id}';onContextChange()">Abrir</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadEmpresaForm('${e.id}')">Editar</button>
+        <button class="btn btn-ghost btn-sm" onclick="removeEmpresa('${e.id}')">×</button>
+      </td>
+    </tr>`).join('')
+    : `<tr><td colspan="4"><div class="table-empty">Nenhuma empresa encontrada.</div></td></tr>`;
+}
+
+/* ---- DRE ---- */
+function renderDRE(c){
+  $('dreCtx').textContent = `${c.e.nome} · ${v('mesAtual')}/${v('anoAtual')}`;
+  $('dreBox').innerHTML=`<div class="table-wrap"><table><tbody>
+    <tr><td>Receita Bruta</td><td style="text-align:right"><b>${money(c.fat+c.receitas)}</b></td></tr>
+    <tr><td>(-) Impostos</td><td style="text-align:right;color:#b91c1c">${money(c.totalImp)}</td></tr>
+    <tr><td><b>Receita Líquida</b></td><td style="text-align:right"><b>${money(c.fat+c.receitas-c.totalImp)}</b></td></tr>
+    <tr><td>(-) Despesas Operacionais</td><td style="text-align:right;color:#b91c1c">${money(c.despesas)}</td></tr>
+    <tr style="border-top:2px solid var(--navy)"><th style="text-align:left;font-size:14px">Resultado Gerencial</th><th style="text-align:right;font-size:15px;color:${c.resultado>=0?'var(--green)':'#b91c1c'}">${money(c.resultado)}</th></tr>
+  </tbody></table></div>`;
+}
+
+/* ---- Fluxo ---- */
+function renderFluxo(c){
+  const labels=meses.map(m=>m[1].slice(0,3));
+  const vals=labels.map((_,idx)=>{
+    const mes=String(idx+1).padStart(2,'0');
+    const fin=cache.fin.filter(x=>x.emp===curEmpId() && x.mes===mes && Number(x.ano)===n('anoAtual'));
+    return fin.reduce((a,x)=>a+(x.tipo==='Receita'?Number(x.valor):-Number(x.valor)),0);
+  });
+  if(typeof Chart === 'undefined'){ chartFallback('chartFluxo'); }
+  else { try{
+    if(chartFluxo)chartFluxo.destroy();
+    chartFluxo=new Chart($('chartFluxo'),{type:'line',data:{labels,datasets:[{label:'Saldo mensal',data:vals,borderColor:'#820AD1',backgroundColor:'rgba(130,10,209,.12)',fill:true,tension:.35,pointBackgroundColor:'#820AD1',pointRadius:4}]},options:{plugins:{legend:{position:'bottom',labels:{boxWidth:12,font:{size:11}}}},scales:{y:{ticks:{callback:v=>'R$'+(v/1000).toFixed(0)+'k'}}}}});
+  }catch(e){ console.warn('chart fluxo falhou:',e); } }
+  const venc=cache.fin.filter(x=>x.emp===curEmpId() && x.status!=='Pago/Recebido');
+  $('vencBox').innerHTML = venc.length ? venc.map(x=>`
+    <p style="margin:7px 0;display:flex;justify-content:space-between;align-items:center;font-size:13px">
+      <span><b>${String(x.dia).padStart(2,'0')}/${x.mes}</b> · ${esc(x.desc)}</span>
+      <span>${money(x.valor)} <span class="badge ${x.status==='Vencido'?'bad':'warn'}">${esc(x.status)}</span></span>
+    </p>`).join('') : '<p class="muted">Nenhum vencimento pendente. Tudo em dia. ✓</p>';
+}
+
+/* ---- Operacional ---- */
+function renderOps(){
+  const emb=n('opEmb'), prazo=n('opPrazo'), sla=emb?prazo/emb*100:0;
+  $('opResumo').innerHTML=`
+    <div class="grid four">
+      <div class="metric"><div class="metric-label">SLA no prazo</div><div class="metric-value" style="color:${sla>=95?'var(--green)':sla>=85?'var(--orange)':'#b91c1c'}">${sla.toFixed(1)}%</div><div class="metric-sub">${prazo}/${emb} entregas</div></div>
+      <div class="metric"><div class="metric-label">Ocorrências</div><div class="metric-value">${n('opOco')}</div><div class="metric-sub">no período</div></div>
+      <div class="metric"><div class="metric-label">Devoluções</div><div class="metric-value">${n('opDev')}</div><div class="metric-sub">no período</div></div>
+      <div class="metric"><div class="metric-label">Taxa devolução</div><div class="metric-value">${emb?(n('opDev')/emb*100).toFixed(1):0}%</div><div class="metric-sub">sobre embarques</div></div>
+    </div>`;
+  const slaBox=$('slaBox');
+  if(slaBox) slaBox.innerHTML=`<div class="metric-value" style="color:${sla>=95?'var(--green)':sla>=85?'var(--orange)':'#b91c1c'}">${sla.toFixed(1)}%</div>
+    <p class="muted">Entregas no prazo: ${prazo}/${emb}</p><div class="bar" style="margin:8px 0 14px"><div class="fill" style="width:${Math.min(100,sla)}%"></div></div>
+    <p style="margin:4px 0;font-size:13px">Ocorrências: <b>${n('opOco')}</b></p><p style="margin:4px 0;font-size:13px">Devoluções: <b>${n('opDev')}</b></p>`;
+}
+
+/* ---- Kanban com drag & drop ---- */
+const KANBAN_STATUSES=['Lead','Qualificado','Proposta','Onboarding','Contrato Ativo'];
+function renderKanban(){
+  $('kanban').innerHTML = KANBAN_STATUSES.map(s=>{
+    const lista=cache.leads.filter(l=>l.emp===curEmpId() && l.status===s);
+    const valor=lista.reduce((a,l)=>a+Number(l.valor||0),0);
+    return `<div class="col" data-status="${s}"
+              ondragover="event.preventDefault();this.classList.add('dragover')"
+              ondragleave="this.classList.remove('dragover')"
+              ondrop="onDrop(event,'${s}')">
+      <h3>${s}</h3>
+      <div class="coltot"><b>${lista.length}</b> · ${money(valor)}</div>
+      ${lista.map(l=>`
+        <div class="leadcard" draggable="true" ondragstart="onDragStart(event,'${l.id}')">
+          <span class="lc-x" onclick="removeLead('${l.id}')" title="Remover">×</span>
+          <b>${esc(l.empresa)}</b>
+          <p class="lc-srv">${esc(l.servico)}</p>
+          <p class="lc-val">${money(l.valor)}</p>
+        </div>`).join('')}
+    </div>`;
+  }).join('');
+
+  const todos=cache.leads.filter(l=>l.emp===curEmpId());
+  const total=todos.reduce((a,l)=>a+Number(l.valor||0),0);
+  const ativos=todos.filter(l=>l.status==='Contrato Ativo');
+  const valAtivos=ativos.reduce((a,l)=>a+Number(l.valor||0),0);
+  const pipeBox=$('pipeBox');
+  if(pipeBox) pipeBox.innerHTML=`<div class="metric-value">${money(total)}</div><p class="muted">pipeline total</p><hr>
+    <p style="margin:4px 0;font-size:13px"><b>Contratos ativos:</b> ${ativos.length}</p>
+    <p style="margin:4px 0;font-size:13px"><b>MRR ativo:</b> ${money(valAtivos)}</p>`;
+}
+let _dragId=null;
+function onDragStart(e,id){ _dragId=id; e.dataTransfer.effectAllowed='move'; }
+function onDrop(e,status){
+  e.preventDefault();
+  document.querySelectorAll('.col').forEach(c=>c.classList.remove('dragover'));
+  if(_dragId){ moveLead(_dragId, status); _dragId=null; }
+}
+
+/* ---- Processos ---- */
+function renderProc(){
+  const lista=cache.processos.filter(p=>p.emp===curEmpId());
+  $('processosBox').innerHTML = lista.length ? lista.map(p=>`
+    <p style="margin:8px 0;display:flex;align-items:center;gap:9px;font-size:14px">
+      <input type="checkbox" ${p.feito?'checked':''} onchange="toggleProc('${p.id}',this.checked)" style="width:auto;margin:0">
+      <span style="flex:1;${p.feito?'text-decoration:line-through;color:var(--muted)':''}">${esc(p.nome)}</span>
+      <button class="btn btn-ghost btn-sm" onclick="removeProc('${p.id}')">×</button>
+    </p>`).join('') : '<p class="muted">Nenhuma etapa cadastrada. Adicione etapas ao onboarding ao lado.</p>';
+
+  const done=lista.filter(p=>p.feito).length, pct=lista.length?Math.round(done/lista.length*100):0;
+  const pp=$('procProgress');
+  if(pp) pp.innerHTML=`<div class="title" style="margin-bottom:8px">Progresso <span class="hint">${done}/${lista.length}</span></div>
+    <div class="metric-value" style="color:${pct===100?'var(--green)':'var(--navy)'}">${pct}%</div>
+    <div class="bar" style="margin-top:8px"><div class="fill" style="width:${pct}%"></div></div>`;
+}
+
+/* ---- Relatório ---- */
+function renderReport(c){
+  $('relatorioBox').innerHTML=`
+    <h2 style="color:var(--navy);margin:0 0 6px">${esc(c.e.nome)}</h2>
+    <p style="margin:2px 0"><b>Regime:</b> ${esc(c.e.regime)} · <b>Município:</b> ${esc(c.e.mun||'—')}</p>
+    <p style="margin:2px 0"><b>Atividade:</b> ${esc(c.e.ativ||'—')} · <b>Tipo principal:</b> ${esc(c.e.tipoPrincipal||'Prestação de Serviço')}</p><hr>
+    <p style="line-height:1.6">No período <b>${v('mesAtual')}/${v('anoAtual')}</b>, a empresa faturou <b>${money(c.fat)}</b>, apurou <b>${money(c.totalImp)}</b> em impostos e apresentou resultado gerencial estimado de <b style="color:${c.resultado>=0?'var(--green)':'#b91c1c'}">${money(c.resultado)}</b>.</p>
+    <p style="line-height:1.6">O sistema recalcula tributos automaticamente conforme regime tributário e notas lançadas, com cada registro persistido individualmente no banco de dados.</p>`;
+}
+
+/* =====================================================================
+   NUVIX PEOPLE — render + CRUD
+   ===================================================================== */
+function empColabs(){ return cache.colab.filter(x=>x.emp===curEmpId() && !x.recrut); }
+function fillColabSelects(){
+  const opts = empColabs().map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+  ['ptColab','avColab','trColab'].forEach(id=>{ if($(id)) $(id).innerHTML = opts; });
+}
+function renderPeople(){
+  renderColab(); renderOrg(); renderRecrut(); renderFolha();
+  renderPonto(); renderAval(); renderTreinos(); fillColabSelects();
+}
+
+/* ----- Colaboradores ----- */
+async function addColab(){
+  if(!emp()){ toast('Selecione uma empresa','err'); return; }
+  const nome=v('coNome').trim(); if(!nome){ toast('Informe o nome','err'); return; }
+  await write(()=>DB.colab.insert({emp:curEmpId(), nome, cargo:v('coCargo')||'—', dep:v('coDep'),
+    sal:n('coSal'), adm:v('coAdm'), status:v('coStatus'), recrut:false}), 'Colaborador adicionado');
+  ['coNome','coCargo','coSal','coAdm'].forEach(id=>$(id).value='');
+  await refreshCache(); renderPeople();
+}
+async function removeColab(id){
+  const ok=await confirmDialog('Excluir este colaborador?','Excluir colaborador'); if(!ok) return;
+  await write(()=>DB.colab.remove(id),'Colaborador excluído');
+  await refreshCache(); renderPeople();
+}
+function renderColab(){
+  const q=(v('colabSearch')||'').toLowerCase();
+  let rows=empColabs();
+  if(q) rows=rows.filter(c=>c.nome.toLowerCase().includes(q)||(c.cargo||'').toLowerCase().includes(q));
+  $('colabCount').textContent = `${empColabs().length} ativo(s)`;
+  const badge=s=>s==='Ativo'?'ok':s==='Férias'?'info2':s==='Desligado'?'bad':'warn';
+  $('colabTable').innerHTML = rows.length ? rows.map(c=>`
+    <tr><td>${esc(c.nome)}</td><td>${esc(c.cargo)}</td><td>${esc(c.dep)}</td>
+    <td><span class="badge ${badge(c.status)}">${esc(c.status)}</span></td>
+    <td><button class="btn btn-ghost btn-sm" onclick="removeColab('${c.id}')">×</button></td></tr>`).join('')
+    : `<tr><td colspan="5"><div class="table-empty">Nenhum colaborador. Cadastre ao lado.</div></td></tr>`;
+}
+
+/* ----- Organograma ----- */
+function renderOrg(){
+  const colabs=empColabs();
+  const empNome=(cache.empresas.find(e=>e.id===curEmpId())||{}).nome||'Empresa';
+  const deps=['Diretoria','Financeiro','RH','Comercial','Operacional','Administrativo'];
+  let html=`<div class="node lvl0">🏢 ${esc(empNome)}</div>`;
+  deps.forEach(d=>{
+    const inDep=colabs.filter(c=>c.dep===d);
+    if(inDep.length===0 && d!=='Diretoria') return;
+    html+=`<div class="node lvl1">${esc(d)} <span class="tag2">${inDep.length} pessoa(s)</span></div>`;
+    inDep.forEach(c=>{ html+=`<div class="node lvl2">${esc(c.nome)} <span class="tag2">${esc(c.cargo)}</span></div>`; });
+  });
+  $('orgBox').innerHTML=html;
+}
+
+/* ----- Recrutamento (pipeline) ----- */
+const RECRUT_STAGES=['Candidato','Triagem','Entrevista RH','Entrevista Gestor','Contratação'];
+async function addCand(){
+  if(!emp()){ toast('Selecione uma empresa','err'); return; }
+  const nome=v('caNome').trim(); if(!nome){ toast('Informe o nome','err'); return; }
+  await write(()=>DB.colab.insert({emp:curEmpId(), nome, cargo:v('caVaga')||'—', dep:'—',
+    sal:0, recrut:true, etapa:v('caEtapa'), origem:v('caOrigem')}), 'Candidato adicionado');
+  ['caNome','caVaga'].forEach(id=>$(id).value='');
+  await refreshCache(); renderRecrut();
+}
+async function moveCand(id, etapa){
+  if(etapa==='Contratação'){
+    // efetiva contratação: vira colaborador
+    await write(()=>DB.colab.update(id,{recrut:false, status:'Ativo', etapa:null, adm:new Date().toISOString().slice(0,10)}),'Candidato contratado! 🎉');
+  } else {
+    await write(()=>DB.colab.update(id,{etapa}), null);
+  }
+  await refreshCache(); renderRecrut(); renderColab(); renderOrg();
+}
+async function removeCand(id){
+  await write(()=>DB.colab.remove(id),'Candidato removido');
+  await refreshCache(); renderRecrut();
+}
+let _candDrag=null;
+function renderRecrut(){
+  const cands=cache.colab.filter(c=>c.emp===curEmpId() && c.recrut);
+  $('recrutPipeline').innerHTML = RECRUT_STAGES.map(s=>{
+    const lista=cands.filter(c=>c.etapa===s);
+    return `<div class="col" data-stage="${s}"
+        ondragover="event.preventDefault();this.classList.add('dragover')"
+        ondragleave="this.classList.remove('dragover')"
+        ondrop="event.preventDefault();this.classList.remove('dragover');if(_candDrag){moveCand(_candDrag,'${s}');_candDrag=null}">
+      <h3>${s}</h3><div class="coltot">${lista.length} candidato(s)</div>
+      ${lista.map(c=>`<div class="leadcard" draggable="true" ondragstart="_candDrag='${c.id}'">
+        <span class="lc-x" onclick="removeCand('${c.id}')">×</span>
+        <b>${esc(c.nome)}</b><p class="lc-srv">${esc(c.cargo)}</p>
+        <p class="csub">${esc(c.origem||'')}</p></div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+/* ----- Folha ----- */
+function folhaParams(){
+  const get=(id,def)=>{const el=$(id); return el?Number(el.value||def):def;};
+  const gets=(id,def)=>{const el=$(id); return el?el.value:def;};
+  return {
+    benef:get('folhaBenef',600), fgts:get('folhaFgts',8), inssPat:get('folhaInssPat',20),
+    inssCol:get('folhaInssCol',9), irrf:get('folhaIrrf',7.5),
+    prov13:gets('folhaProv13','sim')==='sim', provFerias:gets('folhaProvFerias','sim')==='sim'
+  };
+}
+function calcLinhaFolha(c){
+  const p=folhaParams();
+  const bruto=Number(c.sal||0);
+  const benef=p.benef;
+  const inssCol=bruto*(p.inssCol/100);
+  const baseIrrf=Math.max(0,bruto-inssCol);
+  const irrf=baseIrrf*(p.irrf/100);
+  const liquido=Math.max(0,bruto-inssCol-irrf);
+  const fgts=bruto*(p.fgts/100);
+  const inssPat=bruto*(p.inssPat/100);
+  const prov13=p.prov13 ? bruto/12 : 0;
+  const provFerias=p.provFerias ? (bruto/12*1.3333333333) : 0;
+  const custoEmpresa=bruto+benef+fgts+inssPat+prov13+provFerias;
+  return {bruto,benef,inssCol,baseIrrf,irrf,liquido,fgts,inssPat,prov13,provFerias,custoEmpresa};
+}
+function renderFolha(){
+  const colabs=empColabs();
+  $('folhaCtx').textContent = `${colabs.length} colaborador(es)`;
+  const linhas=colabs.map(c=>({c,...calcLinhaFolha(c)}));
+  const soma=k=>linhas.reduce((a,x)=>a+Number(x[k]||0),0);
+  const totalBase=soma('bruto'), beneficios=soma('benef'), fgts=soma('fgts'), inssPat=soma('inssPat');
+  const inssCol=soma('inssCol'), irrf=soma('irrf'), liquido=soma('liquido');
+  const prov13=soma('prov13'), provFerias=soma('provFerias'), totalEmpresa=soma('custoEmpresa');
+  $('folhaResumo').innerHTML=`
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>Salários brutos</span><b>${money(totalBase)}</b></p>
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>Benefícios</span><b>${money(beneficios)}</b></p>
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>Colaboradores</span><b>${colabs.length}</b></p>
+    <hr><p style="margin:0;display:flex;justify-content:space-between;font-size:15px"><b>Custo total empresa</b><b style="color:var(--navy)">${money(totalEmpresa)}</b></p>`;
+  $('folhaEncargos').innerHTML=`
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>FGTS empresa</span><b>${money(fgts)}</b></p>
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>INSS patronal</span><b>${money(inssPat)}</b></p>
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>Provisão 13º</span><b>${money(prov13)}</b></p>
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>Provisão férias + 1/3</span><b>${money(provFerias)}</b></p>
+    <p class="muted" style="margin-top:8px">Parâmetros editáveis. Não substitui folha oficial.</p>`;
+  $('folhaLiquido').innerHTML=`
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>INSS colaborador</span><b>${money(inssCol)}</b></p>
+    <p style="margin:5px 0;display:flex;justify-content:space-between"><span>IRRF estimado</span><b>${money(irrf)}</b></p>
+    <hr><p style="margin:0;display:flex;justify-content:space-between;font-size:15px"><b>Total líquido</b><b style="color:var(--navy)">${money(liquido)}</b></p>`;
+  $('folhaTable').innerHTML = linhas.length ? linhas.map(x=>`
+    <tr><td>${esc(x.c.nome)}</td><td>${esc(x.c.cargo)}</td><td>${money(x.bruto)}</td><td>${money(x.inssCol)}</td><td>${money(x.irrf)}</td><td><b>${money(x.liquido)}</b></td><td>${money(x.fgts)}</td><td><b>${money(x.custoEmpresa)}</b></td>
+      <td><button class="btn btn-light btn-sm" onclick="gerarHolerite('${x.c.id}')">Gerar holerite</button></td></tr>`).join('') : `<tr><td colspan="9"><div class="table-empty">Sem colaboradores para folha.</div></td></tr>`;
+}
+async function gerarHolerite(colabId){
+  const c=cache.colab.find(x=>x.id===colabId); if(!c) return;
+  const linha=calcLinhaFolha(c);
+  await write(()=>DB.holerites.insert({emp:curEmpId(), colabId, mes:v('mesAtual'), ano:n('anoAtual'), bruto:linha.bruto, inss:linha.inssCol, irrf:linha.irrf, liquido:linha.liquido, fgts:linha.fgts, custoEmpresa:linha.custoEmpresa}), `Holerite de ${c.nome.split(' ')[0]} gerado`);
+  await refreshCache();
+}
+
+/* ----- Ponto ----- */
+async function addPonto(){
+  if(!v('ptColab')){ toast('Selecione um colaborador','err'); return; }
+  await write(()=>DB.ponto.insert({emp:curEmpId(), colabId:v('ptColab'), data:v('ptData')||new Date().toISOString().slice(0,10),
+    tipo:v('ptTipo'), hora:v('ptHora')||'00:00'}), 'Ponto registrado');
+  $('ptHora').value='';
+  await refreshCache(); renderPonto();
+}
+async function removePonto(id){
+  await write(()=>DB.ponto.remove(id),'Registro removido');
+  await refreshCache(); renderPonto();
+}
+function renderPonto(){
+  const rows=cache.ponto.filter(p=>p.emp===curEmpId()).sort((a,b)=>b.data>a.data?1:-1);
+  const nameOf=id=>(cache.colab.find(c=>c.id===id)||{}).nome||'—';
+  $('pontoTable').innerHTML = rows.length ? rows.map(p=>`
+    <tr><td>${fmtDate(p.data)}</td><td>${esc(nameOf(p.colabId))}</td>
+    <td><span class="badge ${p.tipo==='Entrada'?'ok':'neutral'}">${esc(p.tipo)}</span></td>
+    <td>${esc(p.hora)}</td>
+    <td><button class="btn btn-ghost btn-sm" onclick="removePonto('${p.id}')">×</button></td></tr>`).join('')
+    : `<tr><td colspan="5"><div class="table-empty">Nenhum registro de ponto.</div></td></tr>`;
+  // banco de horas estimado: pares entrada/saída
+  const byColab={};
+  cache.ponto.filter(p=>p.emp===curEmpId()).forEach(p=>{ (byColab[p.colabId]=byColab[p.colabId]||[]).push(p); });
+  let html='';
+  Object.entries(byColab).forEach(([cid,list])=>{
+    const ent=list.filter(p=>p.tipo==='Entrada').length, sai=list.filter(p=>p.tipo==='Saída').length;
+    html+=`<p style="margin:6px 0;display:flex;justify-content:space-between;font-size:13px"><span>${esc(nameOf(cid))}</span><span>${ent} entradas · ${sai} saídas</span></p>`;
+  });
+  $('bancoHoras').innerHTML = html || '<p class="muted">Registre pontos para calcular o banco de horas.</p>';
+}
+
+/* ----- Avaliação ----- */
+function salvarAval(){
+  const c=cache.colab.find(x=>x.id===v('avColab'));
+  const notas={Comunicação:n('avCom'),Liderança:n('avLid'),Entrega:n('avEnt'),Organização:n('avOrg')};
+  const media=(Object.values(notas).reduce((a,b)=>a+b,0)/4);
+  $('avalResultado').innerHTML=`
+    <div class="title">Resultado — ${esc(c?c.nome:'')}</div>
+    <div class="metric-value" style="color:${media>=8?'var(--green)':media>=6?'var(--orange)':'#b91c1c'}">${media.toFixed(1)} <span style="font-size:14px;color:var(--muted)">/ 10</span></div>
+    <div style="margin-top:14px">${Object.entries(notas).map(([k,val])=>`
+      <p style="margin:4px 0;display:flex;justify-content:space-between;font-size:13px"><span>${k}</span><b>${val.toFixed(1)}</b></p>
+      <div class="bar" style="margin-bottom:10px"><div class="fill" style="width:${val*10}%"></div></div>`).join('')}</div>`;
+  toast('Avaliação calculada','ok');
+}
+function renderAval(){ /* resultado é sob demanda; nada a pré-renderizar */ }
+
+/* ----- Treinamentos ----- */
+async function addTreino(){
+  if(!v('trColab')){ toast('Selecione um colaborador','err'); return; }
+  const curso=v('trCurso').trim(); if(!curso){ toast('Informe o curso','err'); return; }
+  await write(()=>DB.treinos.insert({emp:curEmpId(), curso, colabId:v('trColab'), data:v('trData')||new Date().toISOString().slice(0,10), validade:n('trVal')}), 'Treinamento registrado');
+  $('trCurso').value='';
+  await refreshCache(); renderTreinos();
+}
+async function removeTreino(id){
+  await write(()=>DB.treinos.remove(id),'Treinamento removido');
+  await refreshCache(); renderTreinos();
+}
+function renderTreinos(){
+  const rows=cache.treinos.filter(t=>t.emp===curEmpId());
+  const nameOf=id=>(cache.colab.find(c=>c.id===id)||{}).nome||'—';
+  $('treinoCount').textContent = rows.length?`${rows.length} certificado(s)`:'';
+  $('treinoTable').innerHTML = rows.length ? rows.map(t=>{
+    const venc=new Date(t.data); venc.setMonth(venc.getMonth()+Number(t.validade||0));
+    const vencido=venc<new Date();
+    return `<tr><td>${esc(t.curso)}</td><td>${esc(nameOf(t.colabId))}</td><td>${fmtDate(t.data)}</td>
+      <td><span class="badge ${vencido?'bad':'ok'}">${vencido?'vencido':'válido até '+venc.toLocaleDateString('pt-BR')}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="removeTreino('${t.id}')">×</button></td></tr>`;
+  }).join('') : `<tr><td colspan="5"><div class="table-empty">Nenhum treinamento registrado.</div></td></tr>`;
+}
+
+/* =====================================================================
+   OPERACIONAL — Tarefas (também alimenta a Central do Colaborador)
+   ===================================================================== */
+async function addTarefa(){
+  if(!emp()){ toast('Selecione uma empresa','err'); return; }
+  const titulo=v('tkTitulo').trim(); if(!titulo){ toast('Informe a tarefa','err'); return; }
+  await write(()=>DB.tarefas.insert({emp:curEmpId(), titulo, resp:v('tkResp'), prazo:v('tkPrazo'),
+    status:v('tkStatus'), prio:v('tkPrio')}), 'Tarefa criada');
+  $('tkTitulo').value='';
+  await refreshCache(); renderTarefas();
+}
+async function cycleTarefa(id){
+  const t=cache.tarefas.find(x=>x.id===id); if(!t) return;
+  const next={'Pendente':'Em andamento','Em andamento':'Concluída','Concluída':'Pendente'}[t.status];
+  await write(()=>DB.tarefas.update(id,{status:next}), null);
+  await refreshCache(); renderTarefas();
+  if(can('central')) renderCentral();
+}
+async function removeTarefa(id){
+  await write(()=>DB.tarefas.remove(id),'Tarefa removida');
+  await refreshCache(); renderTarefas();
+}
+function renderTarefas(){
+  const box=$('tarefasTable'); if(!box) return;
+  const rows=cache.tarefas.filter(t=>t.emp===curEmpId());
+  const nameOf=id=>(cache.colab.find(c=>c.id===id)||{}).nome||'—';
+  const badge=s=>s==='Concluída'?'ok':s==='Em andamento'?'info2':'warn';
+  box.innerHTML = rows.length ? rows.map(t=>`
+    <tr><td>${esc(t.titulo)}</td><td>${esc(nameOf(t.resp))}</td><td>${t.prazo?fmtDate(t.prazo):'—'}</td>
+    <td><span class="badge ${t.prio==='Alta'?'bad':t.prio==='Média'?'warn':'neutral'}">${esc(t.prio)}</span></td>
+    <td><button class="badge ${badge(t.status)}" style="border:none;cursor:pointer" onclick="cycleTarefa('${t.id}')" title="Clique para avançar">${esc(t.status)}</button></td>
+    <td><button class="btn btn-ghost btn-sm" onclick="removeTarefa('${t.id}')">×</button></td></tr>`).join('')
+    : `<tr><td colspan="6"><div class="table-empty">Nenhuma tarefa. Crie ao lado.</div></td></tr>`;
+  // popular select de responsáveis
+  const sel=$('tkResp'); if(sel) sel.innerHTML = empColabs().map(c=>`<option value="${c.id}">${esc(c.nome)}</option>`).join('');
+}
+
+/* =====================================================================
+   AUTENTICAÇÃO + CONTROLE DE ACESSO (RBAC) + BOOT
+   ===================================================================== */
+
+/* ---- Navegação (respeita permissões) ---- */
+function gotoSection(sec){
+  const btn = document.querySelector(`#menu button[data-sec="${sec}"]`);
+  const mod = btn ? btn.dataset.mod : sec;
+  if(!can(mod)){ toast('Você não tem acesso a este módulo','err'); return; }
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  if($(sec)) $(sec).classList.add('active');
+  document.querySelectorAll('#menu button').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  $('pageTitle').textContent = btn ? btn.textContent : 'Nuvix';
+  toggleMenu(false);
+  renderAll();
+}
+function bindMenu(){
+  document.querySelectorAll('#menu button').forEach(btn=>{
+    btn.addEventListener('click', ()=> gotoSection(btn.dataset.sec));
+  });
+  // sub-tabs do Nuvix People
+  document.querySelectorAll('#peopleTabs .subtab').forEach(tab=>{
+    tab.addEventListener('click', ()=>{
+      document.querySelectorAll('#peopleTabs .subtab').forEach(t=>t.classList.remove('active'));
+      document.querySelectorAll('#people .subpane').forEach(p=>p.classList.remove('active'));
+      tab.classList.add('active');
+      $(tab.dataset.pane).classList.add('active');
+      renderPeople();
+    });
+  });
+}
+
+/* ---- Aplica o perfil atual à interface ---- */
+function applyAccess(){
+  // mostra/esconde botões do menu
+  document.querySelectorAll('#menu button').forEach(btn=>{
+    btn.style.display = can(btn.dataset.mod) ? '' : 'none';
+  });
+  // esconde grupos cujos itens estão todos ocultos
+  document.querySelectorAll('#menu .grp').forEach(g=>{
+    const mods = (g.dataset.grp||'').split(' ').filter(Boolean);
+    const anyVisible = mods.some(m=>can(m));
+    g.style.display = anyVisible ? '' : 'none';
+  });
+  // controles administrativos só para admin (sem viewAs ativo)
+  const adminOnly = isAdmin() && !session.viewAs;
+  $('empresaAtual').parentElement.style.display = can('dashboard')||can('fiscal')||can('financeiro') ? '' : 'none';
+  $('backupBtn').style.display = adminOnly ? '' : 'none';
+  $('importBtn').style.display = adminOnly ? '' : 'none';
+  // contexto (mês/ano/empresa) faz sentido para módulos de gestão, não para colaborador puro
+  $('ctxSeg').style.display = (currentRole()==='colaborador') ? 'none' : '';
+
+  // banner "vendo como"
+  let banner = $('viewBanner');
+  if(session.viewAs){
+    if(!banner){
+      banner = document.createElement('div');
+      banner.id='viewBanner'; banner.className='viewbanner';
+      $('content').prepend(banner);
+    }
+    const r = ROLES[session.viewAs];
+    banner.style.display='flex';
+    banner.innerHTML = `<span>${r.icon} <b>Modo visualização:</b> você está vendo o sistema como <b>${r.label}</b>. Esta é a experiência desse perfil.</span><button onclick="setViewAs('')">Voltar ao meu acesso</button>`;
+  } else if(banner){ banner.style.display='none'; }
+
+  // garante que a seção ativa é permitida; senão vai para a primeira permitida
+  const activeBtn = document.querySelector('#menu button.active');
+  if(!activeBtn || activeBtn.style.display==='none' || !can(activeBtn.dataset.mod)){
+    const first = [...document.querySelectorAll('#menu button')].find(b=>b.style.display!=='none' && can(b.dataset.mod));
+    if(first) gotoSection(first.dataset.sec);
+  }
+}
+
+/* ---- Chip de usuário + menu ---- */
+function renderUserChip(){
+  const u = session.user; if(!u) return;
+  const r = ROLES[u.role];
+  $('userAva').textContent = (u.nome||'?').charAt(0).toUpperCase();
+  $('userName').textContent = u.nome;
+  $('userRole').textContent = `${r.icon} ${r.label}`;
+  // seletor "Ver como" só para admin
+  if(u.role==='admin'){
+    $('viewAsWrap').style.display='';
+    $('viewAs').innerHTML = `<option value="">— meu acesso (Admin) —</option>` +
+      Object.entries(ROLES).filter(([k])=>k!=='admin').map(([k,r])=>`<option value="${k}" ${session.viewAs===k?'selected':''}>${r.icon} ${r.label}</option>`).join('');
+  } else {
+    $('viewAsWrap').style.display='none';
+  }
+}
+function toggleUserMenu(){ $('userMenu').classList.toggle('open'); }
+document.addEventListener('click', e=>{
+  if(!e.target.closest('#userChip')) $('userMenu')?.classList.remove('open');
+});
+
+/* ---- Ver como (admin testa perfis) ---- */
+function setViewAs(role){
+  session.viewAs = role || null;
+  $('viewAs').value = role || '';
+  renderUserChip();
+  applyAccess();
+  renderAll();
+  if(role) toast(`Agora você vê como ${ROLES[role].label}`,'info');
+  else toast('De volta ao acesso de Administrador','ok');
+}
+
+/* ---- Login / Logout ---- */
+function renderQuickLogins(){
+  const order = ['admin','gestor','financeiro','rh','comercial','operacional','colaborador'];
+  const byRole = {}; cache.users.forEach(u=>{ if(!byRole[u.role]) byRole[u.role]=u; });
+  $('quickLogins').innerHTML = order.filter(r=>byRole[r]).map(r=>{
+    const u=byRole[r], info=ROLES[r];
+    return `<button class="qbtn" onclick="quickLogin('${u.id}')"><span class="qic">${info.icon}</span><span>${info.label}<br><small style="color:var(--muted)">${esc(u.nome)}</small></span></button>`;
+  }).join('');
+}
+function quickLogin(id){
+  const u = cache.users.find(x=>x.id===id);
+  if(u){ $('loginUser').value=u.id; $('loginPass').value=u.pass; doLogin(); }
+}
+function doLogin(){
+  const id = v('loginUser').trim().toLowerCase();
+  const pass = v('loginPass');
+  const u = cache.users.find(x=>x.id.toLowerCase()===id);
+  if(!u || u.pass !== pass){ $('loginErr').classList.add('show'); return; }
+  $('loginErr').classList.remove('show');
+  session.user = u; session.viewAs = null;
+  // empresa do usuário
+  if(u.emp){ const sel=$('empresaAtual'); if([...sel.options].some(o=>o.value===u.emp)) sel.value=u.emp; }
+  enterApp();
+  toast(`Bem-vindo(a), ${u.nome.split(' ')[0]}!`,'ok');
+}
+function doLogout(){
+  session.user = null; session.viewAs = null;
+  $('userMenu').classList.remove('open');
+  $('app').style.display='none';
+  $('loginScreen').style.display='flex';
+  $('loginUser').value=''; $('loginPass').value='';
+}
+function enterApp(){
+  $('loginScreen').style.display='none';
+  $('app').style.display='flex';
+  renderUserChip();
+  applyAccess();
+  renderAll();
+}
+
+async function boot(){
+  try{
+    $('loadingMsg').textContent = HAS_STORAGE ? 'Conectando ao banco persistente…' : 'Iniciando banco em memória…';
+    await seedIfEmpty();
+    await refreshCache();
+    fillSelects();
+    renderEmpresaSelect();
+    loadOpsForm();
+    bindMenu();
+    clearEmpresaForm();
+    fillColabSelects();
+    renderQuickLogins();
+
+    $('loadingScreen').style.display='none';
+    $('loginScreen').style.display='flex';
+
+    if(!HAS_STORAGE){
+      $('dbPillText').textContent='Banco (memória)';
+    }
+  }catch(e){
+    console.error(e);
+    $('loadingScreen').style.display='none';
+    $('loginScreen').style.display='flex';
+    toast('Falha parcial na inicialização','err');
+  }
+}
+boot();
+</script>
+</body>
+</html>
